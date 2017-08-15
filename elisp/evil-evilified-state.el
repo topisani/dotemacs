@@ -1,4 +1,5 @@
 (require 'evil)
+(require 'bind-map)
 
 (defvar evilified-state--modes nil
   "List of all evilified modes.")
@@ -15,10 +16,15 @@
   "Evilified state.
  Hybrid `emacs state' with carefully selected Vim key bindings.
  See spacemacs conventions for more info."
-  :tag " EVILIFIED "
+  :tag " E "
   :enable (emacs)
   :message "-- EVILIFIED BUFFER --"
   :cursor box)
+
+(bind-map dotemacs/leader-map
+  :evil-keys (dotemacs-bindings/leader-key)
+  :evil-states (evilified)
+  :override-minor-modes t)
 
 (evil-define-command evil-force-evilified-state ()
   "Switch to evilified state without recording current command."

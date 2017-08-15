@@ -45,7 +45,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (defun my-eval-and-replace ()
   "Replace the preceding sexp with its value."
   (interactive)
-  (let ((value (eval (preceding-sexp))))
+  (let ((value (eval (elisp--preceding-sexp))))
     (backward-kill-sexp)
     (insert (format "%s" value))))
 

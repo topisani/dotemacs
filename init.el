@@ -61,7 +61,9 @@
 
   (cl-loop for file in (directory-files config-directory t)
            when (string-match "\\.el$" file)
-           do (condition-case ex
-                  (load file)
-                ('error (with-current-buffer "*scratch*"
-                          (insert (format "[INIT ERROR]\n%s\n%s\n\n" file ex)))))))
+           do (load file)))
+
+;; do (condition-case ex
+;;        (load file)
+;;      ('error (with-current-buffer "*scratch*"
+;;                (insert (format "[INIT ERROR]\n%s\n%s\n\n" file ex)))))))

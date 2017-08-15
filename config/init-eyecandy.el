@@ -41,23 +41,24 @@
 (require-package 'diminish)
 (diminish 'visual-line-mode)
 (after 'undo-tree (diminish 'undo-tree-mode))
-(after 'auto-complete (diminish 'auto-complete-mode))
-(after 'company (diminish 'company-mode))
-(after 'projectile (diminish 'projectile-mode))
-(after 'yasnippet (diminish 'yas-minor-mode))
+(after 'auto-complete (diminish 'auto-complete-mode "a"))
+(after 'company (diminish 'company-mode "C"))
+(after 'projectile (diminish 'projectile-mode ""))
+(after 'yasnippet (diminish 'yas-minor-mode "Y"))
 (after 'which-key (diminish 'which-key-mode))
-(after 'eldoc (diminish 'eldoc-mode))
-(after 'smartparens (diminish 'smartparens-mode))
+(after 'eldoc (diminish 'eldoc-mode "e"))
+(after 'smartparens (diminish 'smartparens-mode "p"))
 (after 'elisp-slime-nav (diminish 'elisp-slime-nav-mode))
 (after 'git-gutter+ (diminish 'git-gutter+-mode))
-(after 'highlight-symbol (diminish 'highlight-symbol-mode))
-(after 'indent-guide (diminish 'indent-guide-mode))
+(after 'highlight-symbol (diminish 'highlight-symbol-mode "H"))
+(after 'indent-guide (diminish 'indent-guide-mode "I"))
 (after 'hideshow (diminish 'hs-minor-mode))
 (after 'ivy (diminish 'ivy-mode))
 (after 'helm-mode (diminish 'helm-mode))
-(after 'evil-commentary (diminish 'evil-commentary-mode))
-(after 'page-break-lines (diminish 'page-break-lines-mode))
-(after 'flycheck (diminish 'flycheck-mode))
+(after 'evil-commentary (diminish 'evil-commentary-mode "c"))
+(after 'page-break-lines (diminish 'page-break-lines-mode ))
+(after 'flycheck (diminish 'flycheck-mode "s"))
+(after 'flyspell (diminish 'flyspell-mode "S"))
 (after 'aggressive-indent (diminish 'aggressive-indent-mode))
 (after 'counsel (diminish #'counsel-mode))
 
@@ -106,7 +107,7 @@
 
 (require-package 'highlight-symbol)
 (setq highlight-symbol-idle-delay 0.3)
-(add-hook 'prog-mode-hook 'highlight-symbol-mode)
+;; (add-hook 'prog-mode-hook 'highlight-symbol-mode)
 
 
 (require-package 'highlight-numbers)
@@ -119,11 +120,6 @@
 
 (require-package 'page-break-lines)
 (global-page-break-lines-mode)
-
-
-(require-package 'eval-sexp-fu)
-(require 'eval-sexp-fu)
-(eval-sexp-fu-flash-mode)
 
 
 (add-hook 'find-file-hook 'hl-line-mode)

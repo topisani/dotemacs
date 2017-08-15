@@ -1,4 +1,12 @@
-(setq lv-use-separator t)
+(setq lv-use-separator nil)
+
+(defun my-hydra-key-doc-function (key key-width doc doc-width)
+  (cond
+   ((equal key " ") (format (format "%%-%ds" (+ 3 key-width doc-width)) doc))
+   (t (format (format "%%%ds → %%%ds" key-width (- 0 doc-width)) key doc))))
+
+(setq hydra-key-doc-function 'my-hydra-key-doc-function)
+
 (require-package 'hydra)
 
 (defun my-switch-action (fallback &rest props)
@@ -20,7 +28,7 @@
   (if my-errors-hydra/flycheck
       'flycheck
     'emacs))
-(defhydra my-errors-hydra (:hint nil)
+(defhydra my-errors-hydra (:hint nil :idle 0.2)
   "
    errors:  navigation                 flycheck
             -----------------------    ---------------
@@ -40,32 +48,25 @@
 
 
 
-(defhydra my-quit-hydra (:hint nil :exit t)
-  "
-   quit:  _q_ → quit    _r_ → restart
-"
-  ("q" save-buffers-kill-emacs)
-  ("r" (restart-emacs '("--debug-init"))))
+(defhydra my-quit-hydra (:hint nil :exit t :idle 0.2)
+  "Quit"
+  ("q" save-buffers-kill-emacs "quit")
+  ("r" (restart-emacs '("--debug-init")) "restart"))
 
 
 
-(defhydra my-buffer-hydra (:hint nil :exit t)
-  "
-   buffers:   _b_ → buffers          _k_ → kill buffer             _f_ → reveal in finder
-              _m_ → goto messages    _e_ → erase buffer            ^ ^
-              _s_ → goto scratch     _E_ → erase buffer (force)    ^ ^
-"
-  ("s" my-goto-scratch-buffer)
-  ("k" kill-this-buffer)
-  ("f" reveal-in-osx-finder)
-  ("m" (switch-to-buffer "*Messages*"))
-  ("b" (my-switch-action #'switch-to-buffer :ivy #'my-ivy-mini :helm #'helm-mini))
-  ("e" erase-buffer)
-  ("E" (let ((inhibit-read-only t)) (erase-buffer))))
+(defhydra my-buffer-hydra (:hint nil :exit t :columns 3 :idle 0.2)
+  "Buffers"
+  ("s" my-goto-scratch-buffer "goto scratch")
+  ("d" kill-this-buffer "delete buffer")
+  ("m" (switch-to-buffer "*Messages*") "goto messages")
+  ("b" (my-switch-action #'switch-to-buffer :ivy #'my-ivy-mini :helm #'helm-mini) "buffers")
+  ("e" erase-buffer "erase buffer")
+  ("E" (let ((inhibit-read-only t)) (erase-buffer)) "erase buffer (force)"))
 
 
 
-(defhydra my-jump-hydra (:hint nil :exit t)
+(defhydra my-jump-hydra (:hint nil :exit t :idle 0.2)
   "
    jump   _i_ → outline in current buffer   _l_ → lines in current buffer
           _b_ → bookmarks                   _L_ → lines in all buffers
@@ -77,24 +78,19 @@
 
 
 
-(defhydra my-search-hydra (:hint nil :exit t)
-  "
-    search     project      ^^directory    ^^buffer       ^^buffers      ^^web
-               -------      ^^---------    ^^------       ^^-------      ^^---
-               _a_ → ag       _A_ → ag       _l_ → lines    _L_ → lines    _g_ → google
-               _p_ → pt       _P_ → pt
-"
-  ("a" projectile-ag)
-  ("p" projectile-pt)
-  ("A" ag)
-  ("P" pt-regexp)
-  ("l" my-jump-hydra/lambda-l-and-exit)
-  ("L" my-jump-hydra/lambda-L-and-exit)
-  ("g" my-google))
+(defhydra my-search-hydra (:hint nil :exit t :idle 0.2)
+  "Search "
+  ("a" projectile-ag "ag" :column "Project")
+  ("p" projectile-pt "pt" :column "Project")
+  ("A" ag "ag" :column "Directory")
+  ("P" pt-regexp "pt" :column "Directory")
+  ("l" my-jump-hydra/lambda-l-and-exit "lines" :column "Buffer")
+  ("L" my-jump-hydra/lambda-L-and-exit "lines" :column "buffers")
+  ("g" my-google "google" :column "Web"))
 
 
 
-(defhydra my-file-convert-hydra (:hint nil :exit t)
+(defhydra my-file-convert-hydra (:hint nil :exit t :idle 0.2)
   "
    convert to _d_ → dos
               _u_ → unix
@@ -102,28 +98,29 @@
   ("d" my-buffer-to-dos-format)
   ("u" my-buffer-to-unix-format))
 
-(defhydra my-file-hydra (:hint nil :exit t)
-  "
-   files:    _f_ → find files      _D_ → delete    _y_ → copy filename   _E_ → edit as root   _z_ → fzf
-             _r_ → recent files    _R_ → rename    _c_ → copy file       _C_ → convert
-"
-  ("D" my-delete-current-buffer-file)
-  ("R" my-rename-current-buffer-file)
-  ("f" (my-switch-action #'find-file :ivy #'counsel-find-file :helm #'helm-find-files))
-  ("r" (my-switch-action #'recentf   :ivy #'ivy-recentf       :helm #'helm-recentf))
-  ("y" my-copy-file-name-to-clipboard)
-  ("E" my-find-file-as-root)
-  ("c" copy-file)
-  ("C" my-file-convert-hydra/body)
-  ("z" fzf))
+
+(defhydra my-file-hydra (:hint nil :exit t :columns 5 :idle 0.2)
+  "Files"
+  ("D" my-delete-current-buffer-file "delete")
+  ("R" my-rename-current-buffer-file "rename")
+  ("f" (my-switch-action #'find-file :ivy #'counsel-find-file :helm #'helm-find-files) "find files")
+  ("r" (my-switch-action #'recentf   :ivy #'ivy-recentf       :helm #'helm-recentf) "recent files")
+  ("y" my-copy-file-name-to-clipboard "copy filename")
+  ("E" my-find-file-as-root "edit as root")
+  ("c" copy-file "copy file")
+  ("t" neotree-toggle "toggle neotree  ")
+  ("C" my-file-convert-hydra/body "convert")
+  ("s" save-buffer "save"))
 
 
 
-(defhydra my-toggle-hydra (:hint nil :exit t)
+(defhydra my-toggle-hydra (:hint nil :exit t :idle 0.2)
   "
-   toggle:  _a_ → aggressive indent   _s_ → flycheck   _r_ → read only      _t_ → truncate lines   _e_ → debug on error   ' → switch (%`dotemacs-switch-engine)
-            _f_ → auto-fill           _S_ → flyspell   _c_ → completion     _W_ → word wrap        _g_ → debug on quit
-            _w_ → whitespace          ^ ^              _p_ → auto-pairing   _b_ → page break
+      Toggles
+
+      _a_ → aggressive indent   _s_ → flycheck       _r_ → read only      _t_ → truncate lines   _e_ → debug on error
+      _f_ → auto-fill           _S_ → flyspell       _c_ → completion     _W_ → word wrap        _g_ → debug on quit
+      _w_ → whitespace          _n_ → line numbers   _p_ → auto-pairing   _b_ → page break       _'_ → switch (%`dotemacs-switch-engine)
 "
   ("a" aggressive-indent-mode)
   ("c" (if (eq dotemacs-completion-engine 'company)
@@ -139,6 +136,7 @@
   ("W" toggle-word-wrap)
   ("r" read-only-mode)
   ("f" auto-fill-mode)
+  ("n" global-linum-mode)
   ("p" (cond
         ((eq dotemacs-pair-engine 'emacs)
          (call-interactively #'electric-pair-mode))
@@ -152,7 +150,7 @@
 
 
 
-(defhydra my-helm-hydra (:hint nil :exit t)
+(defhydra my-helm-hydra (:hint nil :exit t :idle 0.2)
   "
    helm:   _a_ → apropos   _m_ → bookmarks   _y_ → kill-ring  _l_ → swoop
            _b_ → mini      _p_ → projectile  _d_ → dash       _L_ → swoop (multi)
@@ -175,7 +173,7 @@
 
 
 
-(defhydra my-ivy-hydra (:hint nil :exit t)
+(defhydra my-ivy-hydra (:hint nil :exit t :idle 0.2)
   "
    ivy:   _b_ → mini       _y_ → kill-ring   _l_ → swiper
           _e_ → recentf    _x_ → M-x         _L_ → swiper (multi)
@@ -196,7 +194,7 @@
 (autoload 'magit-commit-popup "magit-commit" nil t)
 (autoload 'magit-file-popup "magit" nil t)
 
-(defhydra my-git-hydra (:hint nil :exit t)
+(defhydra my-git-hydra (:hint nil :exit t :idle 0.2)
   "
    magit:  _s_ → status  _l_ → log    _f_ → file      staging:  _a_ → +hunk  _A_ → +buffer
            _c_ → commit  _d_ → diff   _z_ → stash               _r_ → -hunk  _R_ → -buffer
@@ -218,7 +216,7 @@
 
 
 
-(defhydra my-paste-hydra (:hint nil)
+(defhydra my-paste-hydra (:hint nil :idle 0.2)
   "
    Paste transient state: [%s(length kill-ring-yank-pointer)/%s(length kill-ring)]
          _C-j_ → cycle next          _p_ → paste before
@@ -233,7 +231,7 @@
 
 (when (> (length narrow-map) 8)
   (error "`narrow-map' has more than 7 bindings!"))
-(defhydra my-narrow-hydra (:hint nil :exit t)
+(defhydra my-narrow-hydra (:hint nil :exit t :idle 0.2)
   "
    narrow  _d_ → defun   _b_ → org-block    _w_ → widen
            _n_ → region  _e_ → org-element

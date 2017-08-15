@@ -1,31 +1,15 @@
-(defmacro bind (&rest commands)
-  "Convenience macro which creates a lambda interactive command."
-  `(lambda (arg)
-     (interactive "P")
-     ,@commands))
+(defun my-switch-action (fallback &rest props)
+  "Performs an action based on the value of `dotemacs-switch-engine'."
+  (cond
+   ((and (eq dotemacs-switch-engine 'ivy) (plist-get props :ivy))
+    (call-interactively (plist-get props :ivy)))
+   ((and (eq dotemacs-switch-engine 'helm) (plist-get props :helm))
+    (call-interactively (plist-get props :helm)))
+   (t
+    (if fallback
+        (call-interactively fallback)
+      (message "unsupported action")))))
 
-(require-package 'which-key)
-(setq which-key-idle-delay 0.2)
-(setq which-key-min-display-lines 3)
-(which-key-mode)
-
-(defmacro -define-key (keymap sequence binding &optional description)
-  (declare (indent defun))
-  `(progn
-     (define-key ,keymap (kbd ,sequence) ,binding)
-     (when ,description
-       (which-key-add-key-based-replacements ,sequence ,description))))
-
-(defmacro -define-keys (keymap &rest body)
-  (declare (indent defun))
-  `(progn
-     ,@(cl-loop for binding in body
-                collect `(let ((seq ,(car binding))
-                               (func ,(cadr binding))
-                               (desc ,(caddr binding)))
-                           (-define-key ,keymap seq func desc)))))
-
-
 
 (after 'evil
   (require-package 'key-chord)
@@ -33,144 +17,66 @@
   (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
   (key-chord-define evil-insert-state-map "kj" 'evil-normal-state)
 
-  (-define-keys evil-normal-state-map
-    (", w" #'save-buffer)
-    (", e" #'eval-last-sexp)
-    (", , e" #'eval-defun)
-    (", E" #'eval-defun)
-    (", f" ctl-x-5-map "frames")
-    (", c" #'my-new-eshell-split "eshell")
-    (", C" #'customize-group)
-    (", v" (kbd "C-w v C-w l") "vsplit")
-    (", s" (kbd "C-w s C-w j") "split")
-    (", P" #'package-list-packages "packages")
-    (", h" help-map "help"))
+  (define-leader
+    (dotemacs-bindings/leader-key #'execute-extended-command "M-x")
+    ("t" #'my-toggle-hydra/body "toggle...")
+    ("q" #'my-quit-hydra/body "quit...")
+    ("e" #'my-errors-hydra/body "errors...")
+    ("j" #'my-jump-hydra/body "jump...")
+    ("f" #'my-file-hydra/body "files...")
+    ("b" #'my-buffer-hydra/body "buffers...")
+    ("s" #'my-search-hydra/body "search...")
+    ("l" #'my-jump-hydra/lambda-l-and-exit "lines(current)")
+    ("L" #'my-jump-hydra/lambda-L-and-exit "lines(all)")
+    ("o" #'my-jump-hydra/lambda-i-and-exit "outline")
+    ("'" #'my-new-eshell-split "shell")
+    ("w" #'evil-window-map "windows...")
+    ("TAB" #'my-mru-buffer "mru buffer")
+    ("n" #'my-narrow-hydra/body "narrow...")
+    ("y" (bind
+          (cond ((eq dotemacs-switch-engine 'ivy)
+                 (call-interactively #'counsel-yank-pop))
+                ((eq dotemacs-switch-engine 'helm)
+                 (call-interactively #'helm-show-kill-ring)))) "kill-ring"))
 
-  (-define-keys evil-visual-state-map
-    (", e" #'eval-region))
-
-  (after "paradox-autoloads"
-    (-define-key evil-normal-state-map ", P" #'paradox-list-packages))
-
-  (-define-key evil-visual-state-map "SPC SPC" #'execute-extended-command "M-x")
-  (-define-keys evil-normal-state-map
-    ("SPC SPC" #'execute-extended-command "M-x")
-    ("SPC t" #'my-toggle-hydra/body "toggle...")
-    ("SPC q" #'my-quit-hydra/body "quit...")
-    ("SPC e" #'my-errors-hydra/body "errors...")
-    ("SPC b" #'my-buffer-hydra/body "buffers...")
-    ("SPC j" #'my-jump-hydra/body "jump...")
-    ("SPC f" #'my-file-hydra/body "files...")
-    ("SPC s" #'my-search-hydra/body "search...")
-    ("SPC l" #'my-jump-hydra/lambda-l-and-exit "lines(current)")
-    ("SPC L" #'my-jump-hydra/lambda-L-and-exit "lines(all)")
-    ("SPC o" #'my-jump-hydra/lambda-i-and-exit "outline")
-    ("SPC '" #'my-new-eshell-split "shell")
-    ("SPC y" (bind
-              (cond ((eq dotemacs-switch-engine 'ivy)
-                     (call-interactively #'counsel-yank-pop))
-                    ((eq dotemacs-switch-engine 'helm)
-                     (call-interactively #'helm-show-kill-ring)))) "kill-ring"))
+  (-define-keys evil-window-map
+    ("d" #'evil-window-delete))
 
   (after "magit-autoloads"
-    (-define-key evil-normal-state-map "SPC g" #'my-git-hydra/body "git..."))
-
-  (after "counsel-autoloads"
-    (-define-key evil-normal-state-map "SPC i" #'my-ivy-hydra/body "ivy..."))
+    (autoload 'magit-log-popup "magit-log" nil t)
+    (autoload 'magit-diff-popup "magit-diff" nil t)
+    (autoload 'magit-commit-popup "magit-commit" nil t)
+    (autoload 'magit-file-popup "magit" nil t)
+    (define-leader
+      ("g s" #'magit-status "status")
+      ("g b" #'magit-blame-popup "blame")
+      ("g f" #'magit-file-popup "file")
+      ("g z" #'magit-status-popup "stash")
+      ("g l" #'magit-log-popup "log")
+      ("g d" #'magit-diff-popup "diff")
+      ("g c" #'magit-commit-popup "commit")
+      ("g m" #'magit-merge-popup "merge")
+      ("g p" #'magit-push-popup "push")
+      ("g h" #'my-git-staging-hydra/body "pick hunks")))
 
   (after "helm-autoloads"
-    (-define-key evil-normal-state-map "SPC h" #'my-helm-hydra/body "helm..."))
-
-  (after "helm-dash-autoloads"
-    (-define-key evil-normal-state-map "SPC d" #'helm-dash "dash"))
-
-  (after "fzf-autoloads"
-    (define-key evil-normal-state-map (kbd "SPC F") 'fzf))
+    (define-leader ("h" #'my-helm-hydra/body "helm...")))
 
   (after "evil-numbers-autoloads"
     (-define-key evil-normal-state-map "C-a" #'evil-numbers/inc-at-pt)
     (-define-key evil-normal-state-map "C-S-a" #'evil-numbers/dec-at-pt))
 
-  (after "git-gutter+-autoloads"
-    (-define-keys evil-normal-state-map
-      ("[ h" #'git-gutter+-previous-hunk)
-      ("] h" #'git-gutter+-next-hunk))
-    (-define-keys evil-visual-state-map
-      ("SPC g a" #'git-gutter+-stage-hunks)
-      ("SPC g r" #'git-gutter+-revert-hunks))
-    (evil-ex-define-cmd "Gw" (bind (git-gutter+-stage-whole-buffer))))
-
-  (-define-keys evil-normal-state-map
-    ("g p" "`[v`]")
-    ("g b" #'my-buffer-hydra/lambda-b-and-exit))
-
-  (-define-keys evil-normal-state-map
-    ("C-b" #'evil-scroll-up)
-    ("C-f" #'evil-scroll-down))
-
-  (-define-keys evil-normal-state-map
-    ("[ SPC" (bind (evil-insert-newline-above) (forward-line)))
-    ("] SPC" (bind (evil-insert-newline-below) (forward-line -1)))
-    ("[ e" "ddkP")
-    ("] e" "ddp")
-    ("[ b" 'previous-buffer)
-    ("] b" 'next-buffer)
-    ("[ q" 'previous-error)
-    ("] q" 'next-error))
-
   (global-set-key (kbd "C-w") 'evil-window-map)
-  (after 'evil-evilified-state
-    (-define-keys evil-evilified-state-map
-      ("C-h" #'evil-window-left)
-      ("C-j" #'evil-window-down)
-      ("C-k" #'evil-window-up)
-      ("C-l" #'evil-window-right)))
-  (-define-keys evil-normal-state-map
-    ("C-h" #'evil-window-left)
-    ("C-j" #'evil-window-down)
-    ("C-k" #'evil-window-up)
-    ("C-l" #'evil-window-right)
-    ("C-w C-h" #'evil-window-left)
-    ("C-w C-j" #'evil-window-down)
-    ("C-w C-k" #'evil-window-up)
-    ("C-w C-l" #'evil-window-right))
-
-  (-define-keys evil-motion-state-map
-    ("j" #'evil-next-visual-line)
-    ("k" #'evil-previous-visual-line))
-
-  (-define-keys evil-normal-state-map
-    ("p" #'my-paste-hydra/evil-paste-after)
-    ("P" #'my-paste-hydra/evil-paste-before)
-    ("Q" #'my-window-killer)
-    ("Y" "y$"))
-
-  (-define-keys evil-normal-state-map
-    ("g d" #'dumb-jump-go))
 
   ;; emacs lisp
   (evil-define-key 'normal emacs-lisp-mode-map "K" (bind (help-xref-interned (symbol-at-point))))
   (after "elisp-slime-nav-autoloads"
     (evil-define-key 'normal emacs-lisp-mode-map (kbd "g d") 'elisp-slime-nav-find-elisp-thing-at-point))
 
-  (after 'coffee-mode
-    (evil-define-key 'visual coffee-mode-map (kbd ", p") 'coffee-compile-region)
-    (evil-define-key 'normal coffee-mode-map (kbd ", p") 'coffee-compile-buffer))
-
-  (after 'stylus-mode
-    (define-key stylus-mode-map [remap eval-last-sexp] 'my-stylus-compile-and-eval-buffer)
-    (evil-define-key 'visual stylus-mode-map (kbd ", p") 'my-stylus-compile-and-show-region)
-    (evil-define-key 'normal stylus-mode-map (kbd ", p") 'my-stylus-compile-and-show-buffer))
-
-  (after 'cider
-    (evil-define-key 'normal clojure-mode-map (kbd ", e") #'cider-eval-last-sexp)
-    (evil-define-key 'visual clojure-mode-map (kbd ", e") #'cider-eval-region)
-    (evil-define-key 'normal clojure-mode-map (kbd ", E") #'cider-eval-defun-at-point))
-
   (after "projectile-autoloads"
-    (-define-keys evil-normal-state-map
-      ("SPC p" #'projectile-command-map "projectile...")
-      ("SPC /"
+    (define-leader
+      ("p" #'projectile-command-map "projectile...")
+      ("/"
        (bind
         (if current-prefix-arg
             (cond
@@ -185,17 +91,7 @@
              ((executable-find "pt") (counsel-pt))))
            ((eq dotemacs-switch-engine 'helm)
             (helm-do-ag (projectile-project-root))))))
-       "search..."))
-    (-define-keys evil-normal-state-map
-      ("C-p" (bind
-              (cond ((eq dotemacs-switch-engine 'helm)
-                     (call-interactively #'helm-projectile))
-                    ((eq dotemacs-switch-engine 'ivy)
-                     (if (projectile-project-p)
-                         (call-interactively #'counsel-projectile-find-file)
-                       (call-interactively #'counsel-projectile)))
-                    (t
-                     (call-interactively #'projectile-find-file-dwim)))))))
+       "search...")))
 
   (after "multiple-cursors-autoloads"
     (define-key evil-normal-state-map (kbd "g r") 'mc/mark-all-like-this-dwim))
@@ -229,10 +125,6 @@
   (define-key ivy-mode-map [escape] (kbd "C-g")))
 
 
-(after "magit-autoloads"
-  (global-set-key (kbd "C-x g") #'my-git-hydra/body))
-
-
 (after "neotree-autoloads"
   (global-set-key [f2] #'neotree)
   (global-set-key [f3] #'neotree-find)
@@ -254,11 +146,6 @@
 (after 'comint
   (define-key comint-mode-map [up] 'comint-previous-input)
   (define-key comint-mode-map [down] 'comint-next-input))
-
-
-(after 'auto-complete
-  (define-key ac-completing-map (kbd "C-n") 'ac-next)
-  (define-key ac-completing-map (kbd "C-p") 'ac-previous))
 
 
 (after 'company
@@ -305,21 +192,8 @@
 (-define-keys (current-global-map)
   ("C-x c" #'calculator)
   ("C-x C" #'calendar)
-  ("C-x C-b" #'ibuffer)
-  ("C-x C-k" #'kill-this-buffer)
   ("C-x n" #'my-narrow-hydra/body)
   ("C-x p" #'proced))
-
-(after "vkill-autoloads"
-  (autoload 'vkill "vkill" nil t)
-  (global-set-key (kbd "C-x p") 'vkill))
-
-(-define-keys (current-global-map)
-  ("C-s"   #'isearch-forward-regexp)
-  ("C-M-s" #'isearch-forward)
-  ("C-r"   #'isearch-backward-regexp)
-  ("C-M-r" #'isearch-backward))
-
 
 ;; have no use for these default bindings
 (global-unset-key (kbd "C-x m"))

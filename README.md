@@ -1,6 +1,10 @@
 # dotemacs
 
-This is my personal KISS Emacs config.
+My emacs configuration, based on [bling][4]'s config.
+
+# @bling's notes:
+
+Everything below is @bling's notes. Some of it still applies, some of it doesn't
 
 # intro
 
@@ -85,3 +89,4 @@ MIT
 [1]: https://github.com/purcell/emacs.d
 [2]: http://milkbox.net/note/single-file-master-emacs-configuration/
 [3]: https://github.com/jwiegley/use-package
+[4]: https://github.com/bling/dotemacs

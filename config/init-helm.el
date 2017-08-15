@@ -53,6 +53,7 @@
   (after "projectile-autoloads"
     (require-package 'helm-projectile))
 
+  (define-key helm-map "\t" 'helm-execute-persistent-action)
 
   ;; take between 10-30% of screen space
   (setq helm-autoresize-min-height 10)

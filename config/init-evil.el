@@ -32,6 +32,12 @@
   :type 'boolean
   :group 'dotemacs-evil)
 
+(defcustom dotemacs-evil/evil-want-C-u-scroll
+  t
+  "If non-nil, `C-u' will scroll up"
+  :type 'boolean
+  :group 'dotemacs-evil)
+
 
 
 (setq evil-search-module 'evil-search)
@@ -48,6 +54,9 @@
 (add-hook 'evil-jumps-post-jump-hook #'recenter)
 
 (require-package 'evil)
+
+(setq evil-want-C-u-scroll dotemacs-evil/evil-want-C-u-scroll)
+
 (require 'evil)
 (evil-mode)
 
@@ -66,13 +75,13 @@
 
 (add-hook 'after-init-hook
           (lambda ()
-            (evil-put-property 'evil-state-properties 'normal   :tag " NORMAL ")
-            (evil-put-property 'evil-state-properties 'insert   :tag " INSERT ")
-            (evil-put-property 'evil-state-properties 'visual   :tag " VISUAL ")
-            (evil-put-property 'evil-state-properties 'motion   :tag " MOTION ")
-            (evil-put-property 'evil-state-properties 'emacs    :tag " EMACS ")
-            (evil-put-property 'evil-state-properties 'replace  :tag " REPLACE ")
-            (evil-put-property 'evil-state-properties 'operator :tag " OPERATOR ")))
+            (evil-put-property 'evil-state-properties 'normal   :tag " N ")
+            (evil-put-property 'evil-state-properties 'insert   :tag " I ")
+            (evil-put-property 'evil-state-properties 'visual   :tag " V ")
+            (evil-put-property 'evil-state-properties 'motion   :tag " M ")
+            (evil-put-property 'evil-state-properties 'emacs    :tag " E ")
+            (evil-put-property 'evil-state-properties 'replace  :tag " R ")
+            (evil-put-property 'evil-state-properties 'operator :tag " O ")))
 
 
 
@@ -107,7 +116,10 @@
 
 (after 'magit
   (require-package 'evil-magit)
-  (require 'evil-magit))
+  (require 'evil-magit)
+  (bind-map dotemacs/leader-map
+    :keys (dotemacs-bindings/leader-key)
+    :major-modes (magit-mode)))
 
 
 (require-package 'evil-avy)
@@ -130,7 +142,6 @@
 
 
 (require-package 'evil-numbers)
-
 
 (defun my-send-string-to-terminal (string)
   (unless (display-graphic-p) (send-string-to-terminal string)))
