@@ -108,6 +108,7 @@
 
 (require-package 'evil-anzu)
 (require 'evil-anzu)
+(setq anzu-cons-mode-line-p nil)
 
 
 (require-package 'evil-ediff)
@@ -116,10 +117,7 @@
 
 (after 'magit
   (require-package 'evil-magit)
-  (require 'evil-magit)
-  (bind-map dotemacs/leader-map
-    :keys (dotemacs-bindings/leader-key)
-    :major-modes (magit-mode)))
+  (require 'evil-magit))
 
 
 (require-package 'evil-avy)

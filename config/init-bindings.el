@@ -57,7 +57,16 @@
       ("g c" #'magit-commit-popup "commit")
       ("g m" #'magit-merge-popup "merge")
       ("g p" #'magit-push-popup "push")
-      ("g h" #'my-git-staging-hydra/body "pick hunks")))
+      ("g h" #'my-git-staging-hydra/body "pick hunks"))
+
+    (after 'with-editor
+      (add-hook 'with-editor-mode-hook 'evil-normalize-keymaps)
+      (let ((mm-key dotemacs-bindings/major-key))
+        (define-evilified-keys with-editor-mode-map
+          ((concat mm-key mm-key) 'with-editor-finish "finish")
+          ((concat mm-key "a")    'with-editor-cancel "cancel")
+          ((concat mm-key "c")    'with-editor-finish "finish")
+          ((concat mm-key "k")    'with-editor-cancel "cancel")))))
 
   (after "helm-autoloads"
     (define-leader ("h" #'my-helm-hydra/body "helm...")))
@@ -94,7 +103,11 @@
        "search...")))
 
   (after "multiple-cursors-autoloads"
-    (define-key evil-normal-state-map (kbd "g r") 'mc/mark-all-like-this-dwim))
+    (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+    (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+    (global-unset-key (kbd "M-<down-mouse-1>"))
+    (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)
+    (evil-global-set-key 'normal "g r" 'mc/mark-all-like-this-dwim))
 
   (after 'js2-mode
     (evil-define-key 'normal js2-mode-map (kbd "g r") #'js2r-rename-var))
@@ -120,28 +133,39 @@
 
 (define-key minibuffer-local-map (kbd "C-w") 'backward-kill-word)
 
-
 (after 'ivy
   (define-key ivy-mode-map [escape] (kbd "C-g")))
 
-
 (after "neotree-autoloads"
-  (global-set-key [f2] #'neotree)
-  (global-set-key [f3] #'neotree-find)
   (after 'neotree
-    (-define-keys neotree-mode-map
-      ("^" (kbd "ggU"))
-      ("c" #'neotree-create-node)
-      ("d" #'neotree-delete-node)
-      ("r" #'neotree-rename-node))))
+    (evilified-state--evilified-state-on-entry)
+    (define-evilified-keys neotree-mode-map
+      ("RET" 'neotree-enter "open")
+      ("TAB" 'neotree-stretch-toggle "shring/enlarge")
+      ("|" 'neotree-enter-vertical-split "vertical split")
+      ("-" 'neotree-enter-horizontal-split "horizontal split")
+      ("'" 'neotree-quick-look "quick look")
+      ("c" 'neotree-create-node "create")
+      ("C" 'neotree-copy-node "copy")
+      ("d" 'neotree-delete-node "delete")
+      ;; ("gr" ' neotree-refresh "refresh")
+      ("h" 'spacemacs/neotree-collapse-or-up "up/collapse")
+      ("H" 'neotree-select-previous-sibling-node "previous sibling")
+      ("j" 'neotree-next-line "line down")
+      ("J" 'neotree-select-down-node "goto child")
+      ("k" 'neotree-previous-line "line up")
+      ("K" 'neotree-select-up-node "goto parent")
+      ("l" 'spacemacs/neotree-expand-or-open "open/expand")
+      ("L" 'neotree-select-next-sibling-node "next sibling")
+      ("r" 'neotree-rename-node "rename")
+      ("R" 'neotree-change-root "change root")
+      ("s" 'neotree-hidden-file-toggle '(if neo-buffer--show-hidden-file-p "[x] hidden files" "[ ] hidden files")))
 
-
-(after "multiple-cursors-autoloads"
-  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-  (global-unset-key (kbd "M-<down-mouse-1>"))
-  (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))
-
+    (define-leader
+      ;; ("ft" 'neotree-toggle)
+      ;; ("fT" 'neotree-show)
+      ;; ("pt" 'neotree-find-project-root)
+      )))
 
 (after 'comint
   (define-key comint-mode-map [up] 'comint-previous-input)
@@ -175,7 +199,7 @@
 
 
 (after "counsel-autoloads"
-  (-define-key (current-global-map) "C-c i" #'my-ivy-hydra/body "ivy..."))
+  (define-leader ("i" #'my-ivy-hydra/body "ivy...")))
 
 
 (global-set-key [prior] 'previous-buffer)

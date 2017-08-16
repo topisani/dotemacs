@@ -101,6 +101,13 @@
  (diminish 'color-identifiers-mode))
 
 
+(require-package 'all-the-icons)
+(after 'neotree
+  (setq neo-theme (if (display-graphic-p) 'icons 'arrow)))
+
+(after 'spaceline
+  (spaceline-compile))
+
 ;; (require-package 'fancy-narrow)
 ;; (fancy-narrow-mode)
 

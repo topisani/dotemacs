@@ -244,14 +244,23 @@ FEATURE may be any one of:
 (defmacro -define-key (keymap sequence binding &optional description)
   (declare (indent defun))
   `(progn
-     (if ,keymap
-	 (define-key ,keymap (kbd ,sequence) ,binding)
-       (after 'evil
-         (define-key evil-visual-state-map (kbd ,sequence) ,binding)
-         (define-key evil-motion-state-map (kbd ,sequence) ,binding)
-         (define-key evil-normal-state-map (kbd ,sequence) ,binding)))
+     (define-key ,keymap (kbd ,sequence) ,binding)
      (when ,description
-       (which-key-add-key-based-replacements ,sequence ,description))))
+       (if (symbolp ,binding)
+           (dotemacs/describe-function ,binding ,description)
+         (dotemacs/describe-key ,sequence ,description)))))
+
+(defun dotemacs/define-evil-key (state keymap sequence binding &optional description)
+  (progn
+    (if (listp state)
+        (dolist (elm state)
+          (dotemacs/define-evil-key elm keymap sequence binding description))
+      (progn
+        (evil-define-key state keymap (kbd sequence) binding)
+        (when description
+          (if (symbolp binding)
+              (dotemacs/describe-function binding description)
+            (dotemacs/describe-key sequence description)))))))
 
 (defmacro -define-keys (keymap &rest body)
   (declare (indent defun))
@@ -262,6 +271,14 @@ FEATURE may be any one of:
                                (desc ,(caddr binding)))
                            (-define-key ,keymap seq func desc)))))
 
+(defmacro define-evilified-keys (keymap &rest body)
+  (declare (indent defun))
+  `(progn
+     ,@(cl-loop for binding in body
+                collect `(let ((seq ,(car binding))
+                               (func ,(cadr binding))
+                               (desc ,(caddr binding)))
+                           (dotemacs/define-evil-key '('evilified 'normal 'motion) ,keymap seq func desc)))))
 
 
 

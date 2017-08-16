@@ -2,6 +2,9 @@
 (require 'rtags) ;; optional, must have rtags installed
 (cmake-ide-setup)
 
+;; Disassembler
+(require-package 'disaster)
+
 (define-major 'c++-mode
   ("m." 'rtags-find-symbol-at-point)
   ("m," 'rtags-find-references-at-point)
@@ -31,4 +34,6 @@
   ("mi" 'rtags-imenu)
   ("mt" 'rtags-taglist)
   ("mh" 'rtags-print-class-hierarchy)
-  ("ma" 'rtags-print-source-arguments))
+  ("ma" 'rtags-print-source-arguments)
+
+  ("a" 'disaster))

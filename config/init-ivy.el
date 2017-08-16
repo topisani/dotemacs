@@ -69,4 +69,8 @@
 (when (eq dotemacs-switch-engine 'ivy)
   (my-switch-engine-as-ivy t))
 
+;; Use ripgrep
+(setq counsel-grep-base-command
+      "rg -i -M 120 --no-heading --line-number --color never '%s' %s")
+
 (provide 'init-ivy)

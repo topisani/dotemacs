@@ -28,14 +28,13 @@
 (setq shackle-default-ratio 0.4)         ; default 0.5
 
 (setq shackle-rules
-      '((compilation-mode                       :select nil     )
-        (c-mode                                 :same t  )
-        ("*Flycheck errors*"
-         :popup t
-         :select t
-         :align 'below)
-        (cscope                                 :same nil)
-        ))
+      '((compilation-mode :select t :same t :popup t :align 'below)
+        (c++-mode         :same t)
+        ("*Flycheck errors*" :popup t :select t :align 'below)
+        (ag-mode :popup t :select t :align 'below)
+        (cscope
+         :same nil)))
+
 (shackle-mode t)
 
 (provide 'init-windows)
