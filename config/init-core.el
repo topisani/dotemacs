@@ -172,13 +172,13 @@
 (setq eval-expression-print-level nil)
 (setq-default indent-tabs-mode nil)
 
-(setq inhibit-splash-screen t)
-(setq inhibit-startup-echo-area-message t)
+(setq inhibit-splash-screen nil)
+(setq inhibit-startup-echo-area-message nil)
 (setq inhibit-startup-message t)
+(setq initial-scratch-message "")
 
 
 (xterm-mouse-mode t)
-(which-function-mode t)
 (blink-cursor-mode -1)
 (global-auto-revert-mode t)
 (electric-indent-mode t)
@@ -205,6 +205,7 @@
 
 
 (evilify Custom-mode Custom-mode-map)
+(after 'evil (evil-set-initial-state 'Custom-mode 'emacs))
 (evilify help-mode help-mode-map)
 (evilify ibuffer-mode ibuffer-mode-map)
 (evilify package-menu-mode package-menu-mode-map)

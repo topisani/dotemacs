@@ -60,7 +60,15 @@
     (load custom-file))
 
   (cl-loop for file in (directory-files config-directory t)
-           when (string-match "\\.el$" file)
+           when (string-match "def.*\\.el$" file)
+           do (load file))
+
+  (cl-loop for file in (directory-files config-directory t)
+           when (string-match "init.*\\.el$" file)
+           do (load file))
+
+  (cl-loop for file in (directory-files config-directory t)
+           when (string-match "keys.*\\.el$" file)
            do (load file)))
 
 ;; do (condition-case ex

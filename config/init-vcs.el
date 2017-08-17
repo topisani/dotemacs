@@ -17,13 +17,6 @@ This is non-nil by default on Windows machines, where this is a heavy performanc
 
 (setq vc-make-backup-files t)
 
-
-
-(require-package 'magit)
-
-(setq magit-section-show-child-count t)
-(setq magit-diff-arguments '("--histogram"))
-(setq magit-ediff-dwim-show-on-hunks t)
 
 
 
@@ -73,5 +66,48 @@ This is non-nil by default on Windows machines, where this is a heavy performanc
   (kbd "M-n") #'vc-annotate-next-revision
   "l" #'vc-annotate-show-log-revision-at-line
   "J" #'vc-annotate-revision-at-line)
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; magit                                         ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(require-package 'magit)
+
+(setq magit-section-show-child-count t)
+(setq magit-diff-arguments '("--histogram"))
+(setq magit-ediff-dwim-show-on-hunks t)
+
+;; Based on spacemacs
+
+(setq magit-completing-read-function
+      (if (eq dotemacs-completion-engine 'ivy)
+          'ivy-completing-read
+        'magit-builtin-completing-read))
+
+(setq magit-revision-show-gravatars '("^Author:     " . "^Commit:     "))
+
+;; On Windows, we must use Git GUI to enter username and password
+;; See: https://github.com/magit/magit/wiki/FAQ#windows-cannot-push-via-https
+(when (eq window-system 'w32)
+  (setenv "GIT_ASKPASS" "git-gui--askpass"))
+
+;; key bindings
+(dotemacs/describe-leader-key "gd" "diff")
+(dotemacs/describe-leader-key "gf" "file")
+
+(define-leader
+  ;; "gb"  'spacemacs/git-blame-micro-state
+  ("gfh" 'magit-log-buffer-file)
+  ("gm"  'magit-dispatch-popup)
+  ("gs"  'magit-status)
+  ("gS"  'magit-stage-file)
+  ("gU"  'magit-unstage-file))
+
+;; seems to be necessary at the time of release
+(require 'git-rebase)
+(-define-key magit-mode-map "<tab>" 'magit-section-toggle "toggle selection")
 
 (provide 'init-vcs)

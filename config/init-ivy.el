@@ -20,7 +20,8 @@
 
 
 (after "projectile-autoloads"
-  (require-package 'counsel-projectile))
+  (require-package 'counsel-projectile)
+  (counsel-projectile-on))
 
 
 (defun my-ivy-mini ()

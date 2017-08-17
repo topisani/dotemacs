@@ -1,40 +1,93 @@
-;; (require-package 'window-purpose)
-;; (purpose-mode)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                 ;;
+;;  WINDOW PURPOSE                                 ;;
+;;                                                 ;;
+;;   Dedicate windows to purposes or buffers       ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; (add-hook 'after-init-hook (lambda ()
-;;                              (purpose-compile-user-configuration)))
+(require-package 'window-purpose)
+(purpose-mode)
+(purpose-x-popwin-setup)
 
-;; 
+(add-hook 'after-init-hook (lambda ()
+                             (purpose-compile-user-configuration)))
 
-;; (define-leader nil
-;;   ("W d" #'purpose-toggle-window-purpose-dedicated "dedicate to purpose")
-;;   ("W D" #'purpose-toggle-window-buffer-dedicated "dedicate to buffer")
-;;   ("W c" #'purpose-delete-non-dedicated-windows "close non-dedicated windows")
-;;   ("W b" #'purpose-switch-buffer-with-purpose "switch buffer")
-;;   ("W s" #'purpose-save-window-layout "save layout")
-;;   ("W l" #'purpose-load-window-layout "load layout"))
+(define-leader
+  ("W d" #'purpose-toggle-window-purpose-dedicated "dedicate to purpose")
+  ("W D" #'purpose-toggle-window-buffer-dedicated "dedicate to buffer")
+  ("W c" #'purpose-delete-non-dedicated-windows "close non-dedicated windows")
+  ("W b" #'purpose-switch-buffer-with-purpose "switch buffer")
+  ("W s" #'purpose-save-window-layout "save layout")
+  ("W l" #'purpose-load-window-layout "load layout"))
 
-;; 
 
-;; ;; c++ setup
-;; (add-to-list 'purpose-user-mode-purposes '(fundamental-mode . code))
-;; (add-to-list 'purpose-user-mode-purposes '(compilation-mode . popup))
-;; (add-to-list 'purpose-user-mode-purposes '(flycheck-error-list-mode . popup))
+(add-to-list 'purpose-user-mode-purposes '(fundamental-mode . code))
+(add-to-list 'purpose-user-mode-purposes '(compilation-mode . popup))
+(add-to-list 'purpose-user-mode-purposes '(flycheck-error-list-mode . popup))
+(add-to-list 'purpose-user-mode-purposes '(ag-mode . popup))
 
-(require-package 'shackle)
+
 
-(setq shackle-select-reused-windows nil) ; default nil
-(setq shackle-default-alignment 'below)  ; default below
-(setq shackle-default-ratio 0.4)         ; default 0.5
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                 ;;
+;;  WINUM AND RELATED                              ;;
+;;                                                 ;;
+;;   Give windows numbers and switch between them  ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(setq shackle-rules
-      '((compilation-mode :select t :same t :popup t :align 'below)
-        (c++-mode         :same t)
-        ("*Flycheck errors*" :popup t :select t :align 'below)
-        (ag-mode :popup t :select t :align 'below)
-        (cscope
-         :same nil)))
+(setq winum-auto-setup-mode-line nil)
 
-(shackle-mode t)
+(require-package 'winum)
+(winum-mode t)
+
+;; https://github.com/deb0ch/spacemacs/blob/fa32a93a08c6363a679e61771b4c4c8252d5166f/layers/%2Bdistributions/spacemacs-base/funcs.el#L215
+(defun spacemacs/move-buffer-to-window (windownum follow-focus-p)
+  "Moves a buffer to a window, using the spacemacs numbering. follow-focus-p
+   controls whether focus moves to new window (with buffer), or stays on
+   current"
+  (interactive)
+  (let ((b (current-buffer))
+        (w1 (selected-window))
+        (w2 (winum-get-window-by-number windownum)))
+    (unless (eq w1 w2)
+      (set-window-buffer w2 b)
+      (switch-to-prev-buffer)
+      (unrecord-window-buffer w1 b)))
+  (when follow-focus-p (select-window (winum-get-window-by-number windownum))))
+
+(defun spacemacs/swap-buffers-to-window (windownum follow-focus-p)
+  "Swaps visible buffers between active window and selected window.
+   follow-focus-p controls whether focus moves to new window (with buffer), or
+   stays on current"
+  (interactive)
+  (let* ((b1 (current-buffer))
+         (w1 (selected-window))
+         (w2 (winum-get-window-by-number windownum))
+         (b2 (window-buffer w2)))
+    (unless (eq w1 w2)
+      (set-window-buffer w1 b2)
+      (set-window-buffer w2 b1)
+      (unrecord-window-buffer w1 b1)
+      (unrecord-window-buffer w2 b2)))
+  (when follow-focus-p (select-window-by-number windownum)))
+
+;; Generate commands
+(dotimes (i 10)
+  (eval `(defun ,(intern (format "buffer-to-window-%s" i)) (&optional arg)
+           ,(format "Move buffer to the window with number %i." i)
+           (interactive "P")
+           (if arg
+               (spacemacs/swap-buffers-to-window ,i t)
+             (spacemacs/move-buffer-to-window ,i t)))))
+
+;; Add which-key replacements
+(after 'which-key
+  (push '(("\\(.*\\) 0" . "winum-select-window-0") . ("\\1 0..9" . "window 0..9"))
+        which-key-replacement-alist)
+  (push '((nil . "winum-select-window-[1-9]") . t) which-key-replacement-alist)
+
+  (push '(("\\(.*\\) 0" . "buffer-to-window-0") . ("\\1 0..9" . "buffer to window 0..9"))
+        which-key-replacement-alist)
+  (push '((nil . "buffer-to-window-[1-9]") . t) which-key-replacement-alist))
 
 (provide 'init-windows)

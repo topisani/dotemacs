@@ -41,22 +41,25 @@
         '(not
           eshell-mode comint-mode org-mode erc-mode))
 
-  (defadvice company-complete-common (around dotemacs activate)
-    (when (null (yas-expand))
-      ad-do-it))
+  (defun check-expansion ()
+    (save-excursion
+      ;; (if (outline-on-heading-p t)
+      ;;     nil
+      (if (looking-at "\\_>") t
+        (backward-char 1)
+        (if (looking-at "\\.") t
+          (backward-char 1)
+          (if (looking-at "->") t nil)))))
 
-  (defun my-company-tab ()
-    (interactive)
-    (when (null (yas-expand))
-      (company-select-next)))
+  (define-key company-mode-map [tab]
+    '(menu-item "maybe-company-expand" nil
+                :filter (lambda (&optional _)
+                          (when (check-expansion)
+                            #'company-complete))))
 
-  (when dotemacs-company/ycmd-server-command
-    (setq ycmd-server-command `("python" ,dotemacs-company/ycmd-server-command))
-    (require-package 'ycmd)
-    (ycmd-setup)
-
-    (require-package 'company-ycmd)
-    (company-ycmd-setup))
+  (after 'yasnippet
+    (define-key yas-minor-mode-map [tab] 'tab-indent-or-complete)
+    (define-key yas-minor-mode-map (kbd "TAB") 'tab-indent-or-complete))
 
   (global-company-mode)
 
@@ -64,11 +67,10 @@
   ;; (require-package 'company-flx)
   ;; (company-flx-mode)
 
-  ;; (when (display-graphic-p)
-  ;;   (require-package 'company-quickhelp)
-  ;;   (setq company-quickhelp-delay 0.2)
-  ;;   (company-quickhelp-mode t))
-
-  )
+  (when (display-graphic-p)
+    (require-package 'pos-tip)
+    (require-package 'company-quickhelp)
+    (setq company-quickhelp-delay 0.2)
+    (company-quickhelp-mode t)))
 
 (provide 'init-company)

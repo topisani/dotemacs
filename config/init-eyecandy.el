@@ -61,6 +61,7 @@
 (after 'flyspell (diminish 'flyspell-mode "S"))
 (after 'aggressive-indent (diminish 'aggressive-indent-mode))
 (after 'counsel (diminish #'counsel-mode))
+(after 'window-purpose (diminish 'purpose-mode))
 
 
 (if (eq dotemacs-eyecandy/mode-line 'sml)
@@ -97,13 +98,11 @@
 
 (delayed-init
  (require-package 'color-identifiers-mode)
- (global-color-identifiers-mode)
+ (global-color-identifiers-mode -1)
  (diminish 'color-identifiers-mode))
 
 
 (require-package 'all-the-icons)
-(after 'neotree
-  (setq neo-theme (if (display-graphic-p) 'icons 'arrow)))
 
 (after 'spaceline
   (spaceline-compile))
@@ -130,6 +129,10 @@
 
 
 (add-hook 'find-file-hook 'hl-line-mode)
+
+
+;; Theme packages
+(require-package 'gruvbox-theme)
 
 
 (provide 'init-eyecandy)

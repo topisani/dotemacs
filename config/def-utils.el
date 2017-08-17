@@ -107,5 +107,12 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (setq dotemacs-switch-engine engine)
   (setq projectile-completion-system dotemacs-switch-engine))
 
+(defun dotemacs/show-config-files ()
+  "Opens a menu with the config file folder"
+  (interactive)
+  (pcase dotemacs-switch-engine
+    ('ivy (counsel-find-file "~/.emacs.d/config"))
+    ('helm (helm-find-files "~/.emacs.d/config"))
+    ('ido (ido-find-file "~/.emacs.d/config"))))
 
-(provide 'init-util)
+(provide 'def-utils)
