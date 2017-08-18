@@ -84,17 +84,23 @@
 
 ;; Visuals
 
+(defun dotemacs//neotree-hidden-file-p (node)
+  (let ((shortname (neo-path--file-short-name node)))
+    (not (null (neo-util--filter
+                (lambda (x) (not (null (string-match-p x shortname))))
+                neo-hidden-regexp-list)))))
+
 (defun dotemacs//neotree-file-face (node)
-  (if (neo-util--hidden-path-filter node)
-      (if neo-vc-integration
-          (cdr (neo-vc-for-node node))
-        'neo-file-link-face)
-    'neotree-hidden-file-face))
+  (if (dotemacs//neotree-hidden-file-p node)
+      'neotree-hidden-file-face
+    (if neo-vc-integration
+        (cdr (neo-vc-for-node node))
+      'neo-file-link-face)))
 
 (defun dotemacs//neotree-dir-face (node)
-  (if (neo-util--hidden-path-filter node)
-      'neo-dir-link-face
-    'neotree-hidden-file-face))
+  (if (dotemacs//neotree-hidden-file-p node)
+      'neotree-hidden-file-face
+    'neo-dir-link-face))
 
 (defun dotemacs//icon-for-dir (dir &rest arg-overrides)
   (let* ((icon (all-the-icons-match-to-alist (file-name-base dir) all-the-icons-dir-icon-alist))
@@ -123,7 +129,9 @@
     (insert (propertize (concat header "\n") 'face face 'line-height 2.5 'line-spacing 0.8))))
 
 (defun dotemacs//get-chevron (dir &rest arg-overrides)
-  (all-the-icons-octicon (format "chevron-%s" dir) arg-overrides :height 0.8 :v-adjust -0.1) "")
+  (let ((args `(,(format "chevron-%s" dir) :height 0.8 :v-adjust -0.1)))
+    (when arg-overrides (setq args (append `(,(car args)) arg-overrides (cdr args))))
+    (apply 'all-the-icons-octicon args)))
 
 (defun dotemacs//neo-buffer--insert-fold-symbol (name &optional node-name)
   "Write icon by NAME, the icon style affected by neo-theme.
@@ -150,14 +158,49 @@ Optional NODE-NAME is used for the `icons' theme"
                                  (dotemacs//get-chevron "right" :face (dotemacs//neotree-dir-face node-name))
                                  (dotemacs//icon-for-dir node-name :face (dotemacs//neotree-dir-face node-name)))))
                 ((equal name 'leaf)
-                 (insert (format "\t\t%s\t" (all-the-icons-icon-for-file node-name :face (dotemacs//neotree-file-face node-name)))))))
+                 (insert (format "\t\t\t%s\t" (all-the-icons-icon-for-file node-name :face (dotemacs//neotree-file-face node-name)))))))
       (or (and (equal name 'open)  (funcall n-insert-symbol "- "))
           (and (equal name 'close) (funcall n-insert-symbol "+ "))))))
+
+(defun dotemacs//neo-buffer--insert-dir-entry (node depth expanded)
+  (let ((node-short-name (neo-path--file-short-name node)))
+    (insert-char ?\s (* (- depth 1) 2)) ; indent
+    (when (memq 'char neo-vc-integration)
+      (insert-char ?\s 2))
+    (neo-buffer--insert-fold-symbol
+     (if expanded 'open 'close) node)
+    (insert-button (concat node-short-name "/")
+                   'follow-link t
+                   'face (dotemacs//neotree-dir-face node)
+                   'neo-full-path node
+                   'keymap neotree-dir-button-keymap
+                   'help-echo (neo-buffer--help-echo-message node-short-name))
+    (neo-buffer--node-list-set nil node)
+    (neo-buffer--newline-and-begin)))
+
+(defun dotemacs//neo-buffer--insert-file-entry (node depth)
+  (let ((node-short-name (neo-path--file-short-name node))
+        (vc (when neo-vc-integration (neo-vc-for-node node))))
+    (insert-char ?\s (* (- depth 1) 2)) ; indent
+    (when (memq 'char neo-vc-integration)
+      (insert-char (car vc))
+      (insert-char ?\s))
+    (neo-buffer--insert-fold-symbol 'leaf node-short-name)
+    (insert-button node-short-name
+                   'follow-link t
+                   'face (dotemacs//neotree-file-face node)
+                   'neo-full-path node
+                   'keymap neotree-file-button-keymap
+                   'help-echo (neo-buffer--help-echo-message node-short-name))
+    (neo-buffer--node-list-set nil node)
+    (neo-buffer--newline-and-begin)))
 
 
 (require 'all-the-icons)
 (advice-add #'neo-buffer--insert-root-entry :override #'dotemacs//neo-buffer--insert-root-entry)
 (advice-add #'neo-buffer--insert-fold-symbol :override #'dotemacs//neo-buffer--insert-fold-symbol)
+(advice-add #'neo-buffer--insert-dir-entry :override #'dotemacs//neo-buffer--insert-dir-entry)
+(advice-add #'neo-buffer--insert-file-entry :override #'dotemacs//neo-buffer--insert-file-entry)
 
 
 ;; hook
