@@ -8,10 +8,9 @@
 (require-package 'company-irony-c-headers)
 
 (defun my-c++-mode-hook ()
-  (setq flycheck-check-syntax-automatically t)
-  ;;(modern-c++-font-lock-mode t)
-  (set (make-local-variable 'company-backends)
-       '((company-irony company-irony-c-headers)))
+  (modern-c++-font-lock-mode t)
+  (push 'company-rtags company-backends)
+  (push 'company-yasnippet company-backends)
   (setq flycheck-check-syntax-automatically '(mode-enabled save idle-change newline)))
 
 (add-hook 'c++-mode-hook 'my-c++-mode-hook)
