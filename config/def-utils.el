@@ -57,7 +57,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
         (message "Buffer is not visiting a file!")
       (let ((new-name (read-file-name "New name: " filename)))
         (cond
-         ((vc-backend filename) (vc-rename-file filename new-name))
          (t
           (rename-file filename new-name t)
           (set-visited-file-name new-name t t)))))))
@@ -67,12 +66,10 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (interactive)
   (let ((filename (buffer-file-name)))
     (when filename
-      (if (vc-backend filename)
-          (vc-delete-file filename)
-        (when (y-or-n-p (format "Are you sure you want to delete %s? " filename))
-          (delete-file filename)
-          (message "Deleted file %s" filename)
-          (kill-buffer))))))
+      (when (y-or-n-p (format "Are you sure you want to delete %s? " filename))
+        (delete-file filename)
+        (message "Deleted file %s" filename)
+        (kill-buffer)))))
 
 (defun my-goto-scratch-buffer ()
   "Create a new scratch buffer."

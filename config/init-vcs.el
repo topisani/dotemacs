@@ -17,22 +17,15 @@ This is non-nil by default on Windows machines, where this is a heavy performanc
 
 (setq vc-make-backup-files t)
 
-
 
 
 (if (display-graphic-p)
     (progn
       (require-package 'git-gutter-fringe+)
-      (require 'git-gutter-fringe+))
-  (require-package 'git-gutter+))
+      (require 'git-gutter-fringe+)))
+
+(require-package 'git-gutter+)
 (global-git-gutter+-mode)
-
-
-
-(require-package 'diff-hl)
-(add-hook 'dired-mode-hook 'diff-hl-dired-mode)
-(unless (display-graphic-p)
-  (diff-hl-margin-mode))
 
 
 
@@ -98,13 +91,19 @@ This is non-nil by default on Windows machines, where this is a heavy performanc
 (dotemacs/describe-leader-key "gd" "diff")
 (dotemacs/describe-leader-key "gf" "file")
 
-(define-leader
-  ;; "gb"  'spacemacs/git-blame-micro-state
-  ("gfh" 'magit-log-buffer-file)
-  ("gm"  'magit-dispatch-popup)
-  ("gs"  'magit-status)
-  ("gS"  'magit-stage-file)
-  ("gU"  'magit-unstage-file))
+(setq magit-display-buffer-function 'magit-display-buffer-traditional)
+(setq split-height-threshold nil
+      split-width-threshold 0)
+
+(after 'magit
+  (require-package 'magithub)
+  (require 'magithub)
+  (magithub-feature-autoinject t))
+
+(custom-set-variables
+ '(ediff-window-setup-function 'ediff-setup-windows-plain)
+ '(ediff-diff-options "-w")
+ '(ediff-split-window-function 'split-window-horizontally))
 
 ;; seems to be necessary at the time of release
 (require 'git-rebase)

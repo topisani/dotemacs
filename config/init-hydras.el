@@ -86,7 +86,7 @@
   ("W" toggle-word-wrap)
   ("r" read-only-mode)
   ("f" auto-fill-mode)
-  ("n" linum-mode)
+  ("n" nlinum-mode)
   ("p" (cond
         ((eq dotemacs-pair-engine 'emacs)
          (call-interactively #'electric-pair-mode))

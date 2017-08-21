@@ -14,7 +14,7 @@
   ("o"   'my-jump-hydra/lambda-i-and-exit "outline")
   ("'"   'my-new-eshell-split "shell")
   ("w"   'evil-window-map "windows")
-  ("TAB" 'my-mru-buffer "mru buffer")
+  ("TAB" 'mru-buffer "mru buffer")
   ("n"   'my-narrow-hydra/body "narrow")
   ("y"   (bind (my-switch-action #'yank-pop :ivy 'counsel-yank-pop :helm 'helm-show-kill-ring)) "kill-ring"))
 
@@ -37,13 +37,61 @@
   ("f s" 'save-buffer "save")
   ("f d" 'dotemacs/show-config-files "config files"))
 
+(after 'projectile
+  (dotemacs/describe-leader-key "p" "project")
+  (define-leader
+    ("p 4 a" #'projectile-find-other-file-other-window)
+    ("p 4 b" #'projectile-switch-to-buffer-other-window)
+    ("p 4 C-o" #'projectile-display-buffer)
+    ("p 4 d" #'projectile-find-dir-other-window)
+    ("p 4 f" #'projectile-find-file-other-window)
+    ("p 4 g" #'projectile-find-file-dwim-other-window)
+    ("p 4 t" #'projectile-find-implementation-or-test-other-window)
+    ("p !" #'projectile-run-shell-command-in-root)
+    ("p &" #'projectile-run-async-shell-command-in-root)
+    ("p a" #'projectile-find-other-file)
+    ("p b" #'projectile-switch-to-buffer)
+    ("p c" #'projectile-compile-project)
+    ("p d" #'projectile-find-dir)
+    ("p D" #'projectile-dired)
+    ("p e" #'projectile-recentf)
+    ("p E" #'projectile-edit-dir-locals)
+    ("p f" #'projectile-find-file)
+    ("p g" #'projectile-find-file-dwim)
+    ("p F" #'projectile-find-file-in-known-projects)
+    ("p i" #'projectile-invalidate-cache)
+    ("p I" #'projectile-ibuffer)
+    ("p j" #'projectile-find-tag)
+    ("p k" #'projectile-kill-buffers)
+    ("p l" #'projectile-find-file-in-directory)
+    ("p m" #'projectile-commander)
+    ("p o" #'projectile-multi-occur)
+    ("p p" #'projectile-switch-project)
+    ("p q" #'projectile-switch-open-project)
+    ("p P" #'projectile-test-project)
+    ("p r" #'projectile-replace)
+    ("p R" #'projectile-regenerate-tags)
+    ("p s g" #'projectile-grep)
+    ("p s s" #'projectile-ag)
+    ("p S" #'projectile-save-project-buffers)
+    ("p t" #'neotree-find-project-root "neotree at root")
+    ("p T" #'projectile-find-test-file)
+    ("p u" #'projectile-run-project)
+    ("p v" #'projectile-vc)
+    ("p V" #'projectile-browse-dirty-projects)
+    ("p x e" #'projectile-run-eshell)
+    ("p x t" #'projectile-run-term)
+    ("p x s" #'projectile-run-shell)
+    ("p z" #'projectile-cache-current-file)))
+
 ;; Buffer keys
 (dotemacs/describe-leader-key "b" "buffers")
 (define-leader
   ("b s" 'my-goto-scratch-buffer "goto scratch")
   ("b d" 'kill-this-buffer "delete buffer")
   ("b n" 'next-buffer "next buffer")
-  ("b N" 'next-buffer "previous buffer")
+  ("b N" 'previous-buffer "previous buffer")
+  ("b p" 'previous-buffer "previous buffer")
   ("b m" (bind (switch-to-buffer "*Messages*")) "goto messages")
   ("b b" (bind (my-switch-action #'switch-to-buffer :ivy #'my-ivy-mini :helm #'helm-mini)) "buffers")
   ("b e" 'erase-buffer "erase buffer")
@@ -64,6 +112,10 @@
   (define-leader
     ((format "%i"  i) (intern (format "winum-select-window-%s" i)))
     ((format "b%i" i) (intern (format "buffer-to-window-%s" i)))))
+
+(after "persp-mode-autoloads"
+  (define-leader
+    ("P" 'persp-key-map "perspective")))
 
 ;; Magit keys
 (after "magit-autoloads"
@@ -99,7 +151,6 @@
 
 (after "projectile-autoloads"
   (define-leader
-    ("p" #'projectile-command-map "projectile...")
     ("/"
      (bind
       (if current-prefix-arg

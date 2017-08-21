@@ -14,5 +14,7 @@
   (flycheck-pos-tip-mode))
 
 (evilify flycheck-error-list-mode flycheck-error-list-mode-map)
+;; Disable fringe markers
+(setq flycheck-indication-mode nil)
 
 (provide 'init-flycheck)

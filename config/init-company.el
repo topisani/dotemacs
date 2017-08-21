@@ -108,12 +108,10 @@
   (after 'yasnippet
     (define-key yas-minor-mode-map [tab] nil)
     (define-key yas-minor-mode-map (kbd "TAB") nil)
-
     (define-key yas-keymap [tab] 'tab-complete-or-next-field)
     (define-key yas-keymap (kbd "TAB") 'tab-complete-or-next-field)
     (define-key yas-keymap [(control tab)] 'yas-next-field)
-    (define-key yas-keymap (kbd "esc") 'abort-company-or-yas))
-  
+    (define-key yas-keymap (kbd "ESC") 'abort-company-or-yas))
   (after 'evil
     (define-key evil-insert-state-map (kbd "<C-tab>") 'company-complete))
 

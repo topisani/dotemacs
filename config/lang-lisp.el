@@ -12,4 +12,7 @@
 (add-hook 'lisp-interaction-mode-hook #'my-lisp-hook)
 (add-hook 'ielm-mode-hook #'my-lisp-hook)
 
+(define-major 'emacs-lisp-mode
+  ("e" #'eval-buffer))
+
 (provide 'init-lisp)

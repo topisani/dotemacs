@@ -1,15 +1,16 @@
 (require-package 'projectile)
 
-(setq projectile-cache-file (concat dotemacs-cache-directory "projectile.cache"))
-(setq projectile-known-projects-file (concat dotemacs-cache-directory "projectile-bookmarks.eld"))
-(setq projectile-indexing-method 'alien)
-(setq projectile-enable-caching t)
-(setq projectile-completion-system dotemacs-switch-engine)
-
 (after 'helm-projectile
   (add-to-list 'helm-projectile-sources-list 'helm-source-projectile-recentf-list))
 
 (require 'projectile)
+
+(setq projectile-cache-file (concat dotemacs-cache-directory "projectile.cache"))
+(setq projectile-known-projects-file (concat dotemacs-cache-directory "projectile-bookmarks.eld"))
+(setq projectile-indexing-method 'alien)
+(setq projectile-completion-system dotemacs-switch-engine)
+
+(setq projectile-enable-caching nil)
 
 (add-to-list 'projectile-globally-ignored-directories "elpa")
 (add-to-list 'projectile-globally-ignored-directories ".cache")
@@ -24,7 +25,6 @@
   (setq projectile-generic-command
         (concat "ack -f --print0"
                 (mapconcat #'identity (cons "" projectile-globally-ignored-directories) " --ignore-dir=")))))
-
 (projectile-global-mode +1)
 
 (provide 'init-projectile)

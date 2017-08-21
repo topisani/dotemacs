@@ -169,7 +169,7 @@ Optional NODE-NAME is used for the `icons' theme"
       (insert-char ?\s 2))
     (neo-buffer--insert-fold-symbol
      (if expanded 'open 'close) node)
-    (insert-button (concat node-short-name "/")
+    (insert-button (concat node-short-name)
                    'follow-link t
                    'face (dotemacs//neotree-dir-face node)
                    'neo-full-path node
@@ -208,7 +208,8 @@ Optional NODE-NAME is used for the `icons' theme"
                                (setq cursor-in-non-selected-windows nil)
                                (buffer-face-set 'cursor '(:inherit 'hl-line-face))
                                (hl-line-mode t)
-                               (linum-mode t)))
+                               (nlinum-mode -1)
+                               (linum-mode -1)))
 
 ;; Settings
 (setq neo-window-width 32
@@ -241,7 +242,7 @@ Optional NODE-NAME is used for the `icons' theme"
 
 (evilified-state--evilified-state-on-entry)
 (define-evilified-keys neotree-mode-map
-  ("RET" 'neotree-enter "open")
+  ("RET" 'dotemacs/neotree-expand-or-open "open")
   ("TAB" 'neotree-stretch-toggle "shring/enlarge")
   ("|" 'neotree-enter-vertical-split "vertical split")
   ("-" 'neotree-enter-horizontal-split "horizontal split")

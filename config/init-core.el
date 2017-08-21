@@ -176,6 +176,7 @@
 (setq inhibit-startup-echo-area-message nil)
 (setq inhibit-startup-message t)
 (setq initial-scratch-message "")
+(setq tooltip-mode -1)
 
 
 (xterm-mouse-mode t)
@@ -215,30 +216,10 @@
   "l" #'calendar-forward-day
   "h" #'calendar-backward-day)
 
-(defun switch-mru-buffer ()
+(defun mru-buffer ()
   "Switch to previously open buffer.
 Repeated invocations toggle between the two most recently open buffers."
+  (interactive)
   (switch-to-buffer (other-buffer (current-buffer) 1)))
-
-(defun my-mru-buffer ()
-  "Switch to previously open buffer.
-Repeated invocations toggle between the two most recently open buffers."
-  (interactive)
-  (switch-mru-buffer)
-  (when (and (string-prefix-p "*" (buffer-name))
-             (string-suffix-p "*" (buffer-name))
-             (not (string= "*scratch*" (buffer-name))))
-    (switch-mru-buffer)))
-
-(defun my-previous-buffer ()
-  "previous-buffer, skip any buffer that starts/ends with `*'"
-  (interactive)
-  (previous-buffer)
-  (when (and (string-prefix-p "*" (buffer-name))
-             (string-suffix-p "*" (buffer-name))
-             (not (string= "*scratch*" (buffer-name))))
-    (my-previous-buffer)))
-
-(global-set-key [remap next-buffer] 'my-mru-buffer)
 
 (provide 'init-core)

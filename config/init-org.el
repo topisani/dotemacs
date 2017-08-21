@@ -23,7 +23,11 @@
 
   (setq org-startup-indented t)
   (setq org-indent-indentation-per-level 2)
+  (setq org-fontify-emphasized-text t)
+  (setq org-fontify-quote-and-verse-blocks t)
+  (setq org-fontify-whole-heading-line t)
   (setq org-src-fontify-natively t)
+  (setq org-hide-emphasis-markers t)
 
   (setq org-agenda-files `(,org-directory))
   (setq org-capture-templates
@@ -67,40 +71,53 @@
   (add-hook 'org-mode-hook #'my-org-mode-hook)
 
   (require-package 'ob-async)
-  (add-to-list 'org-ctrl-c-ctrl-c-hook #'ob-async-org-babel-execute-src-block)
 
   (require-package 'org-bullets)
   (setq org-bullets-bullet-list '("●" "○" "◆" "◇" "▸"))
   (add-hook 'org-mode-hook #'org-bullets-mode))
 
-(after 'ob-plantuml
-  (when (executable-find "npm")
-    (let ((default-directory (concat user-emacs-directory "/extra/plantuml-server/")))
-      (unless (file-exists-p "node_modules/")
-        (shell-command "npm install"))
+(require-package 'evil-org)
+(add-hook 'org-mode-hook 'evil-org-mode)
+(evil-org-set-key-theme '(navigation insert textobjects additional))
 
-      (ignore-errors
-        (let ((kill-buffer-query-functions nil))
-          (kill-buffer "*plantuml-server*")))
-      (start-process "*plantuml-server*" "*plantuml-server*" "npm" "start"))
+;; (require 'ob-plantuml)
+;; (after 'ob-plantuml
+;;   (when (executable-find "npm")
+;;     (let ((default-directory (concat user-emacs-directory "/extra/plantuml-server/")))
+;;       (unless (file-exists-p "node_modules/")
+;;         (shell-command "npm install"))
 
-    (defun init-org/generate-diagram (uml)
-      (let ((url-request-method "POST")
-            (url-request-extra-headers '(("Content-Type" . "text/plain")))
-            (url-request-data uml))
-        (let* ((buffer (url-retrieve-synchronously "http://localhost:8182/png")))
-          (with-current-buffer buffer
-            (goto-char (point-min))
-            (search-forward "\n\n")
-            (buffer-substring (point) (point-max))))))
+;;       (ignore-errors
+;;         (let ((kill-buffer-query-functions nil))
+;;           (kill-buffer "*plantuml-server*")))
+;;       (start-process "*plantuml-server*" "*plantuml-server*" "npm" "start"))
 
-    (defun org-babel-execute:plantuml (body params)
-      (let* ((out-file (or (cdr (assoc :file params))
-                           (error "PlantUML requires a \":file\" header argument"))))
-        (let ((png (init-org/generate-diagram (concat "@startuml\n" body "\n@enduml"))))
-          (with-temp-buffer
-            (insert png)
-            (write-file out-file)))))))
+;;     (defun init-org/generate-diagram (uml)
+;;       (let ((url-request-method "POST")
+;;             (url-request-extra-headers '(("Content-Type" . "text/plain")))
+;;             (url-request-data uml))
+;;         (let* ((buffer (url-retrieve-synchronously "http://localhost:8182/png")))
+;;           (with-current-buffer buffer
+;;             (goto-char (point-min))
+;;             (search-forward "\n\n")
+;;             (buffer-substring (point) (point-max))))))
+
+;;     (defun org-babel-execute:plantuml (body params)
+;;       (let* ((out-file (or (cdr (assoc :file params))
+;;                            (error "PlantUML requires a \":file\" header argument"))))
+;;         (let ((png (init-org/generate-diagram
+;;                     (concat "
+;; @startuml
+
+;; skinparam defaultFontName Hack
+;; skinparam shadowing false
+;; skinparam monochrome true
+
+;; " body "
+;; @enduml"))))
+;;           (with-temp-buffer
+;;             (insert png)
+;;             (write-file out-file)))))))
 
 (provide 'init-org)
 

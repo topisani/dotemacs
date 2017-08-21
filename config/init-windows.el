@@ -7,10 +7,11 @@
 
 (require-package 'window-purpose)
 (purpose-mode)
+(require 'window-purpose-x)
+(purpose-x-kill-setup)
 (purpose-x-popwin-setup)
 
-(add-hook 'after-init-hook (lambda ()
-                             (purpose-compile-user-configuration)))
+(add-hook 'after-init-hook (lambda () (purpose-compile-user-configuration)))
 
 (define-leader
   ("W d" #'purpose-toggle-window-purpose-dedicated "dedicate to purpose")
@@ -89,5 +90,29 @@
   (push '(("\\(.*\\) 0" . "buffer-to-window-0") . ("\\1 0..9" . "buffer to window 0..9"))
         which-key-replacement-alist)
   (push '((nil . "buffer-to-window-[1-9]") . t) which-key-replacement-alist))
+
+
+
+;; Persp-mode
+(require-package 'persp-mode)
+(require 'persp-mode)
+(setq persp-autokill-buffer-on-remove 'kill-weak)
+
+(require 'persp-mode-projectile-bridge)
+(setq persp-mode-projectile-bridge-persp-name-prefix "")
+
+(add-hook 'persp-mode-projectile-bridge-mode-hook
+          #'(lambda ()
+              (if persp-mode-projectile-bridge-mode
+                  (persp-mode-projectile-bridge-find-perspectives-for-all-buffers)
+                (persp-mode-projectile-bridge-kill-perspectives))))
+(add-hook 'after-init-hook
+          #'(lambda ()
+              (persp-mode 1)
+              (persp-mode-projectile-bridge-mode 1))
+          t)
+
+(setq persp-add-buffer-on-find-file 'if-not-autopersp)
+(add-hook 'persp-after-load-state-functions #'(lambda (&rest args) (persp-auto-persps-pickup-buffers)) t)
 
 (provide 'init-windows)

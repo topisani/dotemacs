@@ -108,7 +108,9 @@
 
 (require-package 'evil-anzu)
 (require 'evil-anzu)
-(setq anzu-cons-mode-line-p nil)
+(after 'all-the-icons
+  (setq anzu-cons-mode-line-p nil
+        anzu-replace-to-string-separator (all-the-icons-faicon "long-arrow-right")))
 
 
 (require-package 'evil-ediff)
@@ -143,6 +145,13 @@
 
 (require-package 'evil-lion)
 (evil-lion-mode)
+
+(require-package 'evil-multiedit)
+(require 'evil-multiedit)
+(evil-multiedit-default-keybinds)
+
+;; Ex command that allows you to invoke evil-multiedit with a regular expression, e.g.
+(evil-ex-define-cmd "ie[dit]" 'evil-multiedit-ex-match)
 
 (defun my-send-string-to-terminal (string)
   (unless (display-graphic-p) (send-string-to-terminal string)))

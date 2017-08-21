@@ -69,6 +69,10 @@
 
   (cl-loop for file in (directory-files config-directory t)
            when (string-match "keys.*\\.el$" file)
+           do (load file))
+
+  (cl-loop for file in (directory-files config-directory t)
+           when (string-match "lang-.*\\.el$" file)
            do (load file)))
 
 ;; do (condition-case ex
