@@ -171,12 +171,12 @@
 (setq initial-major-mode 'emacs-lisp-mode)
 (setq eval-expression-print-level nil)
 (setq-default indent-tabs-mode nil)
+(setq-default cursor-in-non-selected-windows nil)
 
 (setq inhibit-splash-screen nil)
 (setq inhibit-startup-echo-area-message nil)
 (setq inhibit-startup-message t)
 (setq initial-scratch-message "")
-(setq tooltip-mode -1)
 
 
 (xterm-mouse-mode t)
@@ -185,7 +185,9 @@
 (electric-indent-mode t)
 (transient-mark-mode t)
 (delete-selection-mode t)
+(tooltip-mode -1)
 (random t) ;; seed
+(semantic-mode -1)
 
 
 (when (eq dotemacs-pair-engine 'emacs)

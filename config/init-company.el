@@ -92,6 +92,13 @@
             (company-abort))
         (company-complete-selection)))
 
+  (defun expand-or-complete-snippet ()
+    (interactive)
+    (company-abort)
+    (condition-case err
+        (company-begin-backend 'company-yasnippet)
+      (user-error (do-yas-expand))))
+
   (defun abort-company-or-yas ()
     (interactive)
     (if (null company-candidates)
@@ -100,18 +107,13 @@
 
   (define-key company-active-map [tab] 'tab-indent-or-complete)
   (define-key company-active-map (kbd "TAB") 'tab-indent-or-complete)
-  (define-key company-active-map [(control return)] 'company-complete-common)
 
-  (define-key company-active-map [tab] 'expand-snippet-or-complete-selection)
-  (define-key company-active-map (kbd "TAB") 'expand-snippet-or-complete-selection)
+  (define-key company-active-map [tab] 'company-complete-selection)
+  (define-key company-active-map (kbd "TAB") 'company-complete-selection)
 
   (after 'yasnippet
-    (define-key yas-minor-mode-map [tab] nil)
-    (define-key yas-minor-mode-map (kbd "TAB") nil)
-    (define-key yas-keymap [tab] 'tab-complete-or-next-field)
-    (define-key yas-keymap (kbd "TAB") 'tab-complete-or-next-field)
-    (define-key yas-keymap [(control tab)] 'yas-next-field)
-    (define-key yas-keymap (kbd "ESC") 'abort-company-or-yas))
+    (define-key yas-keymap (kbd "ESC") 'abort-company-or-yas)
+    (define-key yas-minor-mode-map (kbd "<C-return>") 'expand-or-complete-snippet))
   (after 'evil
     (define-key evil-insert-state-map (kbd "<C-tab>") 'company-complete))
 

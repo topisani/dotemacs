@@ -13,6 +13,11 @@
 
 (add-hook 'after-init-hook (lambda () (purpose-compile-user-configuration)))
 
+(defun purpose-x-popwin-select-window-advice (&rest args)
+  (select-window (car (purpose-windows-with-purpose 'popup))))
+
+(advice-add 'purpose-x-popwin-display-buffer :after 'purpose-x-popwin-select-window-advice)
+
 (define-leader
   ("W d" #'purpose-toggle-window-purpose-dedicated "dedicate to purpose")
   ("W D" #'purpose-toggle-window-buffer-dedicated "dedicate to buffer")
@@ -26,6 +31,7 @@
 (add-to-list 'purpose-user-mode-purposes '(compilation-mode . popup))
 (add-to-list 'purpose-user-mode-purposes '(flycheck-error-list-mode . popup))
 (add-to-list 'purpose-user-mode-purposes '(ag-mode . popup))
+(add-to-list 'purpose-user-mode-purposes '(rtags-mode . popup))
 
 
 
@@ -94,25 +100,38 @@
 
 
 ;; Persp-mode
-(require-package 'persp-mode)
-(require 'persp-mode)
-(setq persp-autokill-buffer-on-remove 'kill-weak)
+;; (require-package 'persp-mode)
+;; (require 'persp-mode)
+;; (setq persp-autokill-buffer-on-remove 'kill-weak)
 
-(require 'persp-mode-projectile-bridge)
-(setq persp-mode-projectile-bridge-persp-name-prefix "")
+;; (require 'persp-mode-projectile-bridge)
+;; (setq persp-mode-projectile-bridge-persp-name-prefix "")
 
-(add-hook 'persp-mode-projectile-bridge-mode-hook
-          #'(lambda ()
-              (if persp-mode-projectile-bridge-mode
-                  (persp-mode-projectile-bridge-find-perspectives-for-all-buffers)
-                (persp-mode-projectile-bridge-kill-perspectives))))
-(add-hook 'after-init-hook
-          #'(lambda ()
-              (persp-mode 1)
-              (persp-mode-projectile-bridge-mode 1))
-          t)
+;; (add-hook 'persp-mode-projectile-bridge-mode-hook
+;;           #'(lambda ()
+;;               (if persp-mode-projectile-bridge-mode
+;;                   (persp-mode-projectile-bridge-find-perspectives-for-all-buffers)
+;;                 (persp-mode-projectile-bridge-kill-perspectives))))
+;; (add-hook 'after-init-hook
+;;           #'(lambda ()
+;;               (persp-mode 1)
+;;               (persp-mode-projectile-bridge-mode 1))
+;;           t)
 
-(setq persp-add-buffer-on-find-file 'if-not-autopersp)
-(add-hook 'persp-after-load-state-functions #'(lambda (&rest args) (persp-auto-persps-pickup-buffers)) t)
+;; (setq persp-add-buffer-on-find-file 'if-not-autopersp)
+;; (add-hook 'persp-after-load-state-functions #'(lambda (&rest args) (persp-auto-persps-pickup-buffers)) t)
+
+;; (with-eval-after-load "persp-mode"
+;;   (defvar after-switch-to-buffer-functions nil)
+;;   (defvar after-display-buffer-functions nil)
+
+;;   ;;Modern way
+;;   (progn
+;;     (defun after-switch-to-buffer-adv (&rest r)
+;;       (apply #'run-hook-with-args 'after-switch-to-buffer-functions r))
+;;     (defun after-display-buffer-adv (&rest r)
+;;       (apply #'run-hook-with-args 'after-display-buffer-functions r))
+;;     (advice-add #'switch-to-buffer :after #'after-switch-to-buffer-adv)
+;;     (advice-add #'display-buffer   :after #'after-display-buffer-adv)))
 
 (provide 'init-windows)

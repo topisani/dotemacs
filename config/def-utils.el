@@ -109,7 +109,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (interactive)
   (pcase dotemacs-switch-engine
     ('ivy (counsel-find-file "~/.emacs.d/config"))
-    ('helm (helm-find-files "~/.emacs.d/config"))
+    ('helm (helm-find-files-1 "~/.emacs.d/config"))
     ('ido (ido-find-file "~/.emacs.d/config"))))
 
 (provide 'def-utils)

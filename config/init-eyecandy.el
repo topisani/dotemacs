@@ -27,13 +27,9 @@
 
 (defun my-fold-overlay (ov)
   (when (eq 'code (overlay-get ov 'hs))
-    (let ((col (save-excursion
-                 (move-end-of-line 0)
-                 (current-column)))
-          (count (count-lines (overlay-start ov) (overlay-end ov))))
+    (let ((count (count-lines (overlay-start ov) (overlay-end ov))))
       (overlay-put ov 'after-string
-                   (format "%s [ %d ] ... "
-                           (make-string (- (window-width) col 32) (string-to-char "."))
+                   (format " [ %d Lines ] ... "
                            count)))))
 (setq hs-set-up-overlay 'my-fold-overlay)
 (add-hook 'prog-mode-hook #'hs-minor-mode)

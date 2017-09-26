@@ -25,6 +25,7 @@
   (setq projectile-generic-command
         (concat "ack -f --print0"
                 (mapconcat #'identity (cons "" projectile-globally-ignored-directories) " --ignore-dir=")))))
-(projectile-global-mode +1)
+
+(projectile-mode +1)
 
 (provide 'init-projectile)

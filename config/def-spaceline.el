@@ -59,8 +59,8 @@
 (spaceline-define-segment
     ati-window-numbering "An `all-the-icons' window numbering segment"
     (propertize (format "%d" (winum-get-number))
-                'face `(:height 1.0 :inherit)
-                'display '(raise 0.07))
+                'face `(:height 0.97 :inherit)
+                'display '(raise 0.05))
     :when (fboundp 'winum-mode))
 
 (spaceline-define-segment
@@ -184,11 +184,9 @@
               (`suspicious  "")))
            (f (cond
                ((string-match "⚠" text) `(:height 0.8 :foreground
-                                                  ,(face-attribute 'spaceline-flycheck-warning :foreground) :inherit))
-               ((string-match "✖ [0-9]" text) `(:height 0.8 :foreground
-                                                        ,(face-attribute 'spaceline-flycheck-error :foreground) :inherit))
-               ((string-match "✖ Disabled" text) `(:height 0.8 :foreground
-                                                           ,(face-attribute 'font-lock-comment-face :foreground) :inherit))
+                                                  ,(face-attribute 'spaceline-flycheck-warning :foreground)))
+               ((string-match " ✖ " text) `(:height 0.8 :foreground
+                                                    ,(face-attribute 'spaceline-flycheck-error :foreground)))
                (t '(:height 0.8 :inherit)))))
       (propertize (format  "%s" text)
                   'face f
@@ -213,7 +211,7 @@
     (let ((num (or spaceline--upgrades (spaceline--count-upgrades))))
       (propertize
        (concat
-        (propertize (format "%s" (all-the-icons-octicon "package"))
+        (propertize (format " %s" (all-the-icons-octicon "package"))
                     'face `(:family ,(all-the-icons-octicon-family) :height 1.0 :inherit)
                     'display '(raise 0.1))
         (propertize (format " %d updates " num) 'face `(:height 0.9 :inherit) 'display '(raise 0.1)))
@@ -332,7 +330,7 @@
         ((ati-mode-icon ati-buffer-id) :face default-face)
         ((ati-process ati-position ati-anzu) :face highlight-face
          :separator (propertize " | " 'display '(raise 0.1)))
-        ((ati-vc-icon ati-flycheck-status ati-package-updates) :separator "" :face other-face))
+        ((ati-vc-icon ati-flycheck-status ati-package-updates) :separator ""))
 
       '(((ati-window-purpose) :separator "" :face other-face :tight-right t)))
     (setq-default mode-line-format '("%e" (:eval (spaceline-ml-ati))))))

@@ -16,9 +16,6 @@
 
 
 (after 'helm
-  (require-package 'helm-descbinds)
-
-
   (require-package 'helm-flx)
   (helm-flx-mode t)
 

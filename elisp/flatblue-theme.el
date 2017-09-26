@@ -113,13 +113,13 @@
 
    ;; Built-in syntax
    `(font-lock-builtin-face            ((t (:foreground ,flatblue-neutral_orange))))
-   `(font-lock-constant-face           ((t (:foreground ,flatblue-neutral_purple))))
+   `(font-lock-constant-face           ((t (:foreground "dark orange"))))
    `(font-lock-comment-face            ((t (:foreground ,flatblue-dark4))))
    `(font-lock-function-name-face      ((t (:foreground ,flatblue-neutral_yellow))))
    `(font-lock-keyword-face            ((t (:foreground ,flatblue-neutral_red))))
    `(font-lock-string-face             ((t (:foreground ,flatblue-neutral_green))))
    `(font-lock-variable-name-face      ((t (:foreground ,flatblue-neutral_blue))))
-   `(font-lock-type-face               ((t (:foreground ,flatblue-neutral_purple))))
+   `(font-lock-type-face               ((t (:foreground "DeepSkyBlue3"))))
    `(font-lock-warning-face            ((t (:foreground ,flatblue-neutral_red :bold t))))
 
    ;; whitespace-mode

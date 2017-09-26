@@ -1,38 +1,81 @@
- 
-(require-package 'cmake-ide)
-(require-package 'rtags)
-(cmake-ide-setup)
-
+;; (require-package 'rtags)
 (require-package 'modern-cpp-font-lock)
 (require-package 'company-irony-c-headers)
 (require-package 'company-irony)
 (require-package 'irony)
 (require-package 'irony-eldoc)
+
+(require 'irony)
+(require-package 'cmake-ide)
+(cmake-ide-setup)
+(require 'flycheck)
 (require-package 'flycheck-irony)
+(flycheck-irony-setup)
 
 (defun my-c++-mode-hook ()
-  (irony-mode)
-  (modern-c++-font-lock-mode t)
-
-  (flycheck-irony-setup)
-  (flycheck-add-next-checker 'irony '(warning . c/c++-cppcheck))
+  (modern-c++-font-lock-mode)
   (flycheck-mode)
-  ;;(aggressive-indent-mode)
 
   (set (make-local-variable 'company-backends) '(company-irony-c-headers company-irony company-yasnippet))
-  (setq flycheck-check-syntax-automatically '(mode-enabled save)))
+  (setq flycheck-check-syntax-automatically '(mode-enabled new-line idle-change save)
+        flycheck-idle-change-delay 1))
 
-(add-hook 'c++-mode-hook 'my-c++-mode-hook)
-(add-hook 'irony-mode-hook #'irony-eldoc)
+(add-hook 'c++-mode-hook #'my-c++-mode-hook)
+(add-hook 'c++-mode-hook 'irony-mode)
 (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+(add-hook 'irony-mode-hook 'irony-eldoc)
+
+(defun company-fuzzy-irony--filter-candidates (prefix candidates)
+  (cl-loop for candidate in candidates
+           collect (propertize (car candidate) 'company-irony candidate)))
+
+(with-eval-after-load 'company-irony
+  (advice-add 'company-irony--filter-candidates :override #'company-fuzzy-irony--filter-candidates))
+
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
 
-(setq rtags-autostart-diagnostics nil)
-(setq company-rtags-begin-after-member-access nil)
-(setq rtags-completions-enabled nil)
+;; (setq rtags-autostart-diagnostics nil)
+;; (setq company-rtags-begin-after-member-access nil)
+;; (setq rtags-completions-enabled nil)
 
 ;; Disassembler
 (require-package 'disaster)
+
+;; Bindings
+(define-major 'c++-mode
+  ("TAB" 'projectile-find-other-file)
+  ("<C-tab>" 'projectile-find-other-file-other-window)
+  ;; ("m." 'rtags-find-symbol-at-point)
+  ;; ("m," 'rtags-find-references-at-point)
+  ;; ("mv" 'rtags-find-virtuals-at-point)
+  ;; ("mV" 'rtags-print-enum-value-at-point)
+  ;; ("m/" 'rtags-find-all-references-at-point)
+  ;; ("my" 'rtags-cycle-overlays-on-screen)
+  ;; ("m>" 'rtags-find-symbol)
+  ;; ("m<" 'rtags-find-references)
+  ;; ("mN" 'rtags-location-stack-back)
+  ;; ("mn" 'rtags-location-stack-forward)
+  ;; ("md" 'rtags-diagnostics)
+  ;; ("mg" 'rtags-guess-function-at-point)
+  ;; ("mp" 'rtags-set-current-project)
+  ;; ("mP" 'rtags-print-dependencies)
+  ;; ("me" 'rtags-reparse-file)
+  ;; ("mE" 'rtags-preprocess-file)
+  ;; ("mr" 'rtags-rename-symbol)
+  ;; ("mm" 'rtags-symbol-info)
+  ;; ("ms" 'rtags-display-summary)
+  ;; ("mo" 'rtags-goto-offset)
+  ;; ("m;" 'rtags-find-file)
+  ;; ("mf" 'rtags-fixit)
+  ;; ("ml" 'rtags-copy-and-print-current-location)
+  ;; ("mx" 'rtags-fix-fixit-at-point)
+  ;; ("mb" 'rtags-show-rtags-buffer)
+  ;; ("mi" 'rtags-imenu)
+  ;; ("mt" 'rtags-taglist)
+  ;; ("mh" 'rtags-print-class-hierarchy)
+  ;; ("ma" 'rtags-print-source-arguments)
+
+  ("a" 'disaster))
 
 
 
@@ -47,43 +90,6 @@
 
 
 
-;; Bindings
-(define-major 'c++-mode
-  ("TAB" 'projectile-find-other-file)
-  ("<C-tab>" 'projectile-find-other-file-other-window)
-  ("m." 'rtags-find-symbol-at-point)
-  ("m," 'rtags-find-references-at-point)
-  ("mv" 'rtags-find-virtuals-at-point)
-  ("mV" 'rtags-print-enum-value-at-point)
-  ("m/" 'rtags-find-all-references-at-point)
-  ("my" 'rtags-cycle-overlays-on-screen)
-  ("m>" 'rtags-find-symbol)
-  ("m<" 'rtags-find-references)
-  ("mN" 'rtags-location-stack-back)
-  ("mn" 'rtags-location-stack-forward)
-  ("md" 'rtags-diagnostics)
-  ("mg" 'rtags-guess-function-at-point)
-  ("mp" 'rtags-set-current-project)
-  ("mP" 'rtags-print-dependencies)
-  ("me" 'rtags-reparse-file)
-  ("mE" 'rtags-preprocess-file)
-  ("mr" 'rtags-rename-symbol)
-  ("mm" 'rtags-symbol-info)
-  ("ms" 'rtags-display-summary)
-  ("mo" 'rtags-goto-offset)
-  ("m;" 'rtags-find-file)
-  ("mf" 'rtags-fixit)
-  ("ml" 'rtags-copy-and-print-current-location)
-  ("mx" 'rtags-fix-fixit-at-point)
-  ("mb" 'rtags-show-rtags-buffer)
-  ("mi" 'rtags-imenu)
-  ("mt" 'rtags-taglist)
-  ("mh" 'rtags-print-class-hierarchy)
-  ("ma" 'rtags-print-source-arguments)
-
-  ("a" 'disaster))
-
-
 
 ;; GDB
 (require 'gud)
@@ -135,5 +141,12 @@
   ad-do-it
   (set-window-configuration global-config-editing)
   (gud-tooltip-mode nil))
+
+
+
+;; LLDB
+
+(require 'gud-lldb)
+
 
 (provide 'lang-c++)

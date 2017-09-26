@@ -133,7 +133,9 @@
     ("g c" #'magit-commit-popup        "commit"    )
     ("g m" #'magit-merge-popup         "merge"     )
     ("g p" #'magit-push-popup          "push"      )
-    ("g h" #'my-git-staging-hydra/body "pick hunks"))
+    ("g h" #'my-git-staging-hydra/body "pick hunks")
+    ("g g" #'global-git-gutter+-mode   "gutter"))
+
 
   (after 'with-editor
     (add-hook 'with-editor-mode-hook 'evil-normalize-keymaps)

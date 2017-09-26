@@ -49,6 +49,7 @@
   ("A" ag "ag" :column "Directory")
   ("P" pt-regexp "pt" :column "Directory")
   ("l" my-jump-hydra/lambda-l-and-exit "lines" :column "Buffer")
+  ("h" evil-ex-nohighlight "highlight" :column "Buffer")
   ("L" my-jump-hydra/lambda-L-and-exit "lines" :column "buffers")
   ("g" my-google "google" :column "Web"))
 
