@@ -73,7 +73,11 @@
 
   (cl-loop for file in (directory-files config-directory t)
            when (string-match "lang-.*\\.el$" file)
-           do (load file)))
+           do (load file))
+
+  ;; Reload themes
+  (cl-loop for theme in custom-enabled-themes
+           do (load-theme theme)))
 
 ;; do (condition-case ex
 ;;        (load file)

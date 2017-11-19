@@ -14,6 +14,11 @@
   (flycheck-pos-tip-mode))
 
 (evilify flycheck-error-list-mode flycheck-error-list-mode-map)
+
+(after 'evil
+  (evil-declare-ignore-repeat 'spacemacs/next-error)
+  (evil-declare-ignore-repeat 'spacemacs/previous-error))
+
 ;; Disable fringe markers
 (setq flycheck-indication-mode nil)
 

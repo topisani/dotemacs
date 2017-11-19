@@ -13,6 +13,7 @@
   '(eshell-mode
     term-mode
     calculator-mode
+    xref--xref-buffer-mode
     makey-key-mode)
   "List of major modes that should default to Emacs state."
   :type '(repeat (symbol))
@@ -40,24 +41,16 @@
 
 
 
+(setq evil-want-C-u-scroll dotemacs-evil/evil-want-C-u-scroll)
+
 (setq evil-search-module 'evil-search)
 (setq evil-magic 'very-magic)
-
-(setq evil-emacs-state-cursor '("red" box))
-(setq evil-motion-state-cursor '("orange" box))
-(setq evil-normal-state-cursor '("green" box))
-(setq evil-visual-state-cursor '("orange" box))
-(setq evil-insert-state-cursor '("red" bar))
-(setq evil-replace-state-cursor '("red" bar))
-(setq evil-operator-state-cursor '("red" hollow))
 
 (add-hook 'evil-jumps-post-jump-hook #'recenter)
 
 (require-package 'evil)
-
-(setq evil-want-C-u-scroll dotemacs-evil/evil-want-C-u-scroll)
-
 (require 'evil)
+
 (evil-mode)
 
 (cl-loop for mode in dotemacs-evil/emacs-state-minor-modes

@@ -32,6 +32,7 @@
 (add-to-list 'purpose-user-mode-purposes '(flycheck-error-list-mode . popup))
 (add-to-list 'purpose-user-mode-purposes '(ag-mode . popup))
 (add-to-list 'purpose-user-mode-purposes '(rtags-mode . popup))
+(add-to-list 'purpose-user-mode-purposes '(xref--xref-buffer-mode . popup))
 
 
 

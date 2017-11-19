@@ -172,24 +172,46 @@
     (let* ((text
             (pcase flycheck-last-status-change
               (`finished (if flycheck-current-errors
-                             (let ((count (let-alist (flycheck-count-errors flycheck-current-errors)
-                                            (+ (or .warning 0) (or .error 0)))))
-                               (format " ✖ %s Issue%s " count (if (eq 1 count) "" "s")))
-                           " ✔ No Issues "))
-              (`running     " ⟲ Checking ")
-              (`no-checker  " ⚠ No Checker ")
-              (`not-checked "")
-              (`errored     " ⚠ Error ")
-              (`interrupted " ⛔ Interrupted ")
-              (`suspicious  "")))
-           (f (cond
-               ((string-match "⚠" text) `(:height 0.8 :foreground
-                                                  ,(face-attribute 'spaceline-flycheck-warning :foreground)))
-               ((string-match " ✖ " text) `(:height 0.8 :foreground
-                                                    ,(face-attribute 'spaceline-flycheck-error :foreground)))
-               (t '(:height 0.8 :inherit)))))
+                             (let-alist (flycheck-count-errors flycheck-current-errors)
+                               (format "%s %s"
+                                       (if .error
+                                           (concat
+                                            (propertize
+                                             (format " %s"
+                                                     (all-the-icons-octicon "bug"))
+                                             'face `(:family ,(all-the-icons-octicon-family)
+                                                             :foreground ,(face-attribute 'spaceline-flycheck-error :foreground)
+                                                             :height 0.9))
+                                            (propertize
+                                             (format " %s "
+                                                     .error)
+                                             'face `(:foreground ,(face-attribute 'spaceline-flycheck-error :foreground)
+                                                                 :height 0.9))
+                                            )
+                                         "")
+                                       (if .warning
+                                           (concat
+                                            (propertize
+                                             (format " %s"
+                                                     (all-the-icons-octicon "alert"))
+                                             'face `(:family ,(all-the-icons-octicon-family)
+                                                             :foreground ,(face-attribute 'spaceline-flycheck-warning :foreground)
+                                                             :height 0.8))
+                                            (propertize
+                                             (format " %s "
+                                                     .warning)
+                                             'face `(:foreground ,(face-attribute 'spaceline-flycheck-warning :foreground)
+                                                                 :height 0.9))
+                                            )
+                                         "")))
+                           (propertize " ✔ "               'face `(:height 0.8))))
+              (`running     (propertize " ⟲ "              'face `(:height 0.8)))
+              (`no-checker  (propertize " ⚠ No Checker "   'face `(:height 0.8)))
+              (`not-checked (propertize ""                 'face `(:height 0.8)))
+              (`errored     (propertize " ⚠ Error "        'face `(:height 0.8)))
+              (`interrupted (propertize " ⛔ Interrupted " 'face `(:height 0.8)))
+              (`suspicious  (propertize ""                 'face `(:height 0.8))))))
       (propertize (format  "%s" text)
-                  'face f
                   'help-echo "Show Flycheck Errors"
                   'display '(raise 0.12)
                   'mouse-face '(:box 1)

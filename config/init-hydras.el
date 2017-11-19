@@ -72,6 +72,7 @@
       _a_ → aggressive indent   _s_ → flycheck       _r_ → read only      _t_ → truncate lines   _e_ → debug on error
       _f_ → auto-fill           _S_ → flyspell       _c_ → completion     _W_ → word wrap        _g_ → debug on quit
       _w_ → whitespace          _n_ → line numbers   _p_ → auto-pairing   _b_ → page break       _'_ → switch (%`dotemacs-switch-engine)
+      _i_ → fill indicator
 "
   ("a" aggressive-indent-mode)
   ("c" (if (eq dotemacs-completion-engine 'company)
@@ -87,6 +88,7 @@
   ("W" toggle-word-wrap)
   ("r" read-only-mode)
   ("f" auto-fill-mode)
+  ("i" fci-mode)
   ("n" nlinum-mode)
   ("p" (cond
         ((eq dotemacs-pair-engine 'emacs)
@@ -98,5 +100,6 @@
         ((eq dotemacs-switch-engine 'helm) (my-activate-switch-engine 'ido))
         ((eq dotemacs-switch-engine 'ido)  (my-activate-switch-engine 'ivy)))
    :exit nil))
+
 
 (provide 'init-hydras)

@@ -15,7 +15,6 @@
   ("'"   'my-new-eshell-split "shell")
   ("w"   'evil-window-map "windows")
   ("TAB" 'mru-buffer "mru buffer")
-  ("n"   'my-narrow-hydra/body "narrow")
   ("y"   (bind (my-switch-action #'yank-pop :ivy 'counsel-yank-pop :helm 'helm-show-kill-ring)) "kill-ring"))
 
 (-define-keys evil-window-map
@@ -107,6 +106,18 @@
   ("e v" 'flycheck-verify-setup "verify setup")
   ("e ?" 'flycheck-describe-checker "describe checker"))
 
+;; Narrowing
+(dotemacs/describe-leader-key "n" "narrow")
+(define-leader
+  ("n n" 'fancy-narrow-to-region)
+  ("n d" 'fancy-narrow-to-defun)
+  ("n p" 'fancy-narrow-to-page)
+  ("n b" 'org-fancy-narrow-to-block)
+  ("n e" 'org-fancy-narrow-to-element)
+  ("n s" 'org-fancy-narrow-to-subtree)
+  ("n w" 'fancy-widen))
+
+
 ;; Select/move windows
 (dotimes (i 10)
   (define-leader
@@ -150,6 +161,12 @@
 (after "evil-numbers-autoloads"
   (-define-key evil-normal-state-map "C-a" #'evil-numbers/inc-at-pt)
   (-define-key evil-normal-state-map "C-S-a" #'evil-numbers/dec-at-pt))
+
+(after 'evil
+  (evil-define-minor-mode-key 'normal 'hs-minor-mode-map
+    "zm" 'hs-hide-level
+    "zM" 'evil-close-folds
+    ))
 
 (after "projectile-autoloads"
   (define-leader
@@ -242,7 +259,7 @@
 ;; Disable default keybindings
 (global-unset-key (kbd "C-x m"))
 
-;; 
+
 (global-set-key (kbd "C-x C-c") (bind (message "Thou shall not quit!")))
 (after 'evil
   (defadvice evil-quit (around dotemacs activate)

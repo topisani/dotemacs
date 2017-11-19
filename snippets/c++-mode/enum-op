@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: Binary operator for scoped enum
+# key: enop
+# --
+$1 operator $2 ($1 lhs, $1 rhs)
+{
+  return $1{std::underlying_type_t<$1>(lhs) $2
+           std::underlying_type_t<$1>(rhs)};
+}$0

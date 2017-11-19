@@ -1,80 +1,79 @@
-;; (require-package 'rtags)
 (require-package 'modern-cpp-font-lock)
-(require-package 'company-irony-c-headers)
-(require-package 'company-irony)
-(require-package 'irony)
-(require-package 'irony-eldoc)
 
-(require 'irony)
-(require-package 'cmake-ide)
-(cmake-ide-setup)
-(require 'flycheck)
-(require-package 'flycheck-irony)
-(flycheck-irony-setup)
+(require 'cc-mode)
+(custom-set-variables '(c-noise-macro-names '("constexpr" "noexcept")))
+(c-make-noise-macro-regexps)
 
+(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+
+
+;; Disassembler
+(require-package 'disaster)
+
+
+
+(require 'modern-c++-mode)
+
+(after 'cc-mode
+
+  ;; Generic doxygen formatting
+  (defconst custom-font-lock-doc-comments
+    (let ((symbol "[a-zA-Z0-9_]+"))
+      `((,(concat "\`[^\`]+\`") ; `symbol`
+         0 ,c-doc-markup-face-name prepend nil)
+        (,(concat "[\\][^[:space:]]+") ; \doxy OR @doxy
+         0 ,c-doc-markup-face-name prepend nil)
+        (,(concat "[@][^[:space:]\n]+") ; \doxy OR @doxy
+         0 ,font-lock-warning-face prepend nil)
+        (,(concat "\\\\t?param " symbol) ; \param PAR OR \tparam PAR
+         0 ,c-doc-markup-face-name prepend nil)
+        )))
+
+  ;; Matches across multiple lines:
+  ;;   /** doxy comments */
+  ;;   /*! doxy comments */
+  ;;   /// doxy comments
+  ;; Doesn't match:
+  ;;   /*******/
+  (defconst custom-font-lock-keywords
+    `((,(lambda (limit)
+          (c-font-lock-doc-comments "/\\(//\\|\\*[\\*!][^\\*!]\\)"
+              limit custom-font-lock-doc-comments)))))
+  (setq-default c-doc-comment-style (quote (custom))))
+
+
+;; Hooks
 (defun my-c++-mode-hook ()
   (modern-c++-font-lock-mode)
   (flycheck-mode)
-
-  (set (make-local-variable 'company-backends) '(company-irony-c-headers company-irony company-yasnippet))
+  (auto-fill-mode)
+  (lsp-cquery-enable)
+  (setq
+   lsp-enable-codeaction t
+   lsp-enable-xref t
+   lsp-enable-flycheck t)
+  (set (make-local-variable 'company-backends) '(company-lsp company-yasnippet))
   (setq flycheck-check-syntax-automatically '(mode-enabled new-line idle-change save)
         flycheck-idle-change-delay 1))
 
 (add-hook 'c++-mode-hook #'my-c++-mode-hook)
-(add-hook 'c++-mode-hook 'irony-mode)
-(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
-(add-hook 'irony-mode-hook 'irony-eldoc)
 
-(defun company-fuzzy-irony--filter-candidates (prefix candidates)
-  (cl-loop for candidate in candidates
-           collect (propertize (car candidate) 'company-irony candidate)))
+(require-package 'lsp-mode)
+(after 'lsp-mode
+  (require 'lsp-flycheck)
+  (require-package 'company-lsp))
+(require 'lsp-cquery)
 
-(with-eval-after-load 'company-irony
-  (advice-add 'company-irony--filter-candidates :override #'company-fuzzy-irony--filter-candidates))
 
-(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
-
-;; (setq rtags-autostart-diagnostics nil)
-;; (setq company-rtags-begin-after-member-access nil)
-;; (setq rtags-completions-enabled nil)
-
-;; Disassembler
-(require-package 'disaster)
 
 ;; Bindings
 (define-major 'c++-mode
   ("TAB" 'projectile-find-other-file)
   ("<C-tab>" 'projectile-find-other-file-other-window)
-  ;; ("m." 'rtags-find-symbol-at-point)
-  ;; ("m," 'rtags-find-references-at-point)
-  ;; ("mv" 'rtags-find-virtuals-at-point)
-  ;; ("mV" 'rtags-print-enum-value-at-point)
-  ;; ("m/" 'rtags-find-all-references-at-point)
-  ;; ("my" 'rtags-cycle-overlays-on-screen)
-  ;; ("m>" 'rtags-find-symbol)
-  ;; ("m<" 'rtags-find-references)
-  ;; ("mN" 'rtags-location-stack-back)
-  ;; ("mn" 'rtags-location-stack-forward)
-  ;; ("md" 'rtags-diagnostics)
-  ;; ("mg" 'rtags-guess-function-at-point)
-  ;; ("mp" 'rtags-set-current-project)
-  ;; ("mP" 'rtags-print-dependencies)
-  ;; ("me" 'rtags-reparse-file)
-  ;; ("mE" 'rtags-preprocess-file)
-  ;; ("mr" 'rtags-rename-symbol)
-  ;; ("mm" 'rtags-symbol-info)
-  ;; ("ms" 'rtags-display-summary)
-  ;; ("mo" 'rtags-goto-offset)
-  ;; ("m;" 'rtags-find-file)
-  ;; ("mf" 'rtags-fixit)
-  ;; ("ml" 'rtags-copy-and-print-current-location)
-  ;; ("mx" 'rtags-fix-fixit-at-point)
-  ;; ("mb" 'rtags-show-rtags-buffer)
-  ;; ("mi" 'rtags-imenu)
-  ;; ("mt" 'rtags-taglist)
-  ;; ("mh" 'rtags-print-class-hierarchy)
-  ;; ("ma" 'rtags-print-source-arguments)
-
+  ("." 'xref-find-definitions)
+  ("?" 'xref-find-references)
+  ("," 'xref-pop-marker-stack)
+  ("f" 'cquery-select-codeaction)
   ("a" 'disaster))
 
 
@@ -96,7 +95,10 @@
 
 (setq gdb-many-windows nil)
 (add-hook 'gud-mode-hook (defun my-gud-mode-hook ()
+                           (setq comint-scroll-to-bottom-on-input t)
+                           (setq comint-scroll-to-bottom-on-output 'others)
                            (company-mode -1)))
+
 
 (defun set-gdb-layout(&optional c-buffer)
   (interactive)
