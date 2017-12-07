@@ -12,10 +12,11 @@
   (require-package 'company)
   (require 'company)
 
-  (setq company-idle-delay 0.2)
+  (setq company-idle-delay 5)
   (setq company-minimum-prefix-length 1)
   (setq company-show-numbers t)
   (setq company-tooltip-limit 20)
+  (setq company-auto-complete nil)
 
   (setq company-dabbrev-downcase nil)
   (setq company-dabbrev-ignore-case t)

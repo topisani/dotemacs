@@ -19,9 +19,10 @@
   (setq show-paren-delay 0))
 
 
-(require-package 'nlinum)
+(require-package 'linum-relative)
 (column-number-mode t)
-(global-nlinum-mode t)
+(global-linum-mode t)
+(linum-relative-global-mode)
 (display-time-mode t)
 (size-indication-mode t)
 

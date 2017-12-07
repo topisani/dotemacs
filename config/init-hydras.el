@@ -89,7 +89,7 @@
   ("r" read-only-mode)
   ("f" auto-fill-mode)
   ("i" fci-mode)
-  ("n" nlinum-mode)
+  ("n" linum-mode)
   ("p" (cond
         ((eq dotemacs-pair-engine 'emacs)
          (call-interactively #'electric-pair-mode))

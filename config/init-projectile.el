@@ -10,7 +10,7 @@
 (setq projectile-indexing-method 'alien)
 (setq projectile-completion-system dotemacs-switch-engine)
 
-(setq projectile-enable-caching nil)
+(setq projectile-enable-caching t)
 
 (add-to-list 'projectile-globally-ignored-directories "elpa")
 (add-to-list 'projectile-globally-ignored-directories ".cache")

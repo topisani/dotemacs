@@ -28,8 +28,8 @@
        (colour-blue_light           "#07b0ff")
        (colour-blue                 "#178ca6")
        (colour-blue_dark            "#005973")
+       (colour-purple_light         "#ff465a")
        (colour-purple               "#dd465a")
-       (colour-purple               "#ff465a")
        (colour-purple_dark          "#8f3f71")
        (colour-aqua                 "#67c5b4")
        (colour-aqua_dark            "#249991")
@@ -56,8 +56,8 @@
    ;; UI
    `(default                           ((t (:background ,colour-background :foreground ,colour-foreground))))
    `(cursor                            ((t (:background ,colour-cursor))))
-   `(mode-line                         ((t (:box nil :background ,colour-background_soft2 :foreground ,colour-foreground_soft))))
-   `(mode-line-inactive                ((t (:box nil :background ,colour-background_soft1 :foreground ,colour-foreground_soft2))))
+   `(mode-line                         ((t (:box nil :background ,colour-background_soft1 :foreground ,colour-foreground_soft))))
+   `(mode-line-inactive                ((t (:box nil :background ,colour-background_soft :foreground ,colour-foreground_soft2))))
    `(fringe                            ((t (:background ,colour-background))))
    `(linum                             ((t (:background ,colour-background :foreground ,colour-background_soft2))))
    `(hl-line                           ((t (:background ,colour-background_soft1))))
@@ -77,6 +77,17 @@
    `(font-lock-variable-name-face      ((t (:foreground ,colour-blue))))
    `(font-lock-type-face               ((t (:foreground ,colour-blue_light))))
    `(font-lock-warning-face            ((t (:foreground ,colour-red :bold t))))
+
+   ;; cquery
+   `(cquery-sem-type-face              ((t (:inherit font-lock-type-face))))
+
+   ;; lsp-ui
+   `(lsp-xref-filename                 ((t (:foreground ,colour-foreground_soft))))
+   `(lsp-xref-header                   ((t (:background ,colour-blue_dark :foreground ,colour-foreground))))
+   `(lsp-xref-highlight                ((t (:background ,colour-background_soft2))))
+   `(lsp-xref-line-number              ((t (:background ,colour-background_hard :inherit linum))))
+   `(lsp-xref-list                     ((t (:background ,colour-background_hard :foreground ,colour-foreground_soft2))))
+   `(lsp-xref-peek                     ((t (:background ,colour-background_hard))))
 
    ;; whitespace-mode
    `(whitespace-space                  ((t (:background ,colour-background :foreground ,colour-comments))))
@@ -252,7 +263,7 @@
    `(mode-line-inactive ((t (:box nil))))
    `(neo-vc-edited-face ((t (:foreground ,colour-orange))))
    `(neo-vc-up-to-date-face ((t (:inherit neo-file-link-face))))
-   `(trailing-whitespace ((t (:background ,colour-comments))))
+   `(trailing-whitespace ((t (:background ,colour-background_soft))))
 
    ;; Smart-mode-line
    `(sml/global            ((t (:foreground ,colour-foreground_soft1 :inverse-video nil))))
@@ -294,9 +305,10 @@
    `(fringes-outside-margins t)
    `(nlinum-highlight-current-line t)
    `(nlinum-format "%4d ")
+   `(linum-format 'flatblue//linum-format)
+   `(linum-relative-format "%4s ")
    ;; Evil
 
-   `(linum-format 'flatblue//linum-format)
    `(ansi-color-names-vector
      [,colour-dark-foreground ,colour-red ,colour-green ,colour-yellow
                               ,colour-blue ,colour-purple ,colour-aqua
@@ -369,6 +381,14 @@
     (flatblue//set-git-fringe 'git-gutter-fr+-added)
     (flatblue//set-git-fringe 'git-gutter-fr+-modified)
     (flatblue//set-git-fringe 'git-gutter-fr+-deleted t)))
+
+;;;###autoload
+(with-eval-after-load 'linum-relative
+  (add-hook 'linum-relative-mode-hook
+            (lambda ()
+              (let ((w (length (number-to-string (count-lines (point-min) (point-max))))))
+                (make-variable-buffer-local 'linum-relative-format)
+                (setq linum-relative-format (format "%%%ds " w))))))
 
 (provide-theme 'flatblue)
 

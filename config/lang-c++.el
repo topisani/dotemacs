@@ -12,8 +12,6 @@
 
 
 
-(require 'modern-c++-mode)
-
 (after 'cc-mode
 
   ;; Generic doxygen formatting
@@ -47,6 +45,7 @@
   (modern-c++-font-lock-mode)
   (flycheck-mode)
   (auto-fill-mode)
+  (lsp-ui-mode)
   (lsp-cquery-enable)
   (setq
    lsp-enable-codeaction t
@@ -60,19 +59,29 @@
 
 (require-package 'lsp-mode)
 (after 'lsp-mode
-  (require 'lsp-flycheck)
+  (require 'lsp-ui)
   (require-package 'company-lsp))
-(require 'lsp-cquery)
+(require 'cquery)
 
+(define-evilified-keys lsp-xref-mode-map
+  ("n" 'lsp-xref--select-next)
+  ("N" 'lsp-xref--select-prev)
+  ("p" 'lsp-xref--select-prev)
+  ("j" 'lsp-xref--select-next)
+  ("k" 'lsp-xref--select-prev)
+  ("<return>" (bind (lsp-xref--goto-xref) (lsp-xref--abort)))
+  ("<esc>" 'lsp-xref--abort)
+  ("q" 'lsp-xref--abort))
 
 
 ;; Bindings
 (define-major 'c++-mode
   ("TAB" 'projectile-find-other-file)
   ("<C-tab>" 'projectile-find-other-file-other-window)
-  ("." 'xref-find-definitions)
-  ("?" 'xref-find-references)
+  ("." 'lsp-xref-find-definitions)
+  ("?" 'lsp-xref-find-references)
   ("," 'xref-pop-marker-stack)
+  ("=" 'clang-format)
   ("f" 'cquery-select-codeaction)
   ("a" 'disaster))
 
@@ -126,6 +135,7 @@
     (set-window-dedicated-p w-stack t)
 
     (set-window-buffer w-gdb gud-comint-buffer)
+    (set-window-dedicated-p w-gdb t)
 
     (select-window w-source)
     (set-window-buffer w-source c-buffer)))
@@ -149,6 +159,5 @@
 ;; LLDB
 
 (require 'gud-lldb)
-
 
 (provide 'lang-c++)

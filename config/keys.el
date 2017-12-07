@@ -87,7 +87,8 @@
 (dotemacs/describe-leader-key "b" "buffers")
 (define-leader
   ("b s" 'my-goto-scratch-buffer "goto scratch")
-  ("b d" 'kill-this-buffer "delete buffer")
+  ("b d" 'evil-delete-buffer "delete buffer")
+  ("b B" 'bury-buffer "bury buffer")
   ("b n" 'next-buffer "next buffer")
   ("b N" 'previous-buffer "previous buffer")
   ("b p" 'previous-buffer "previous buffer")

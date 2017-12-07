@@ -120,7 +120,7 @@
 
 (defun dotemacs//neo-buffer--insert-root-entry (node)
   (neo-buffer--node-list-set nil node)
-  (let ((face '(:inherit 'neo-root-dir-face :height 1.5))
+  (let ((face '(:inherit neo-root-dir-face :height 1.5))
         (header (or (car (last (split-string node "/" t))) "/")))
     (if (display-graphic-p)
         (insert (concat (propertize " " 'face face )
@@ -208,8 +208,7 @@ Optional NODE-NAME is used for the `icons' theme"
                                (setq cursor-in-non-selected-windows nil)
                                (buffer-face-set 'cursor '(:inherit 'hl-line-face))
                                (hl-line-mode t)
-                               (nlinum-mode -1)
-                               (linum-mode -1)))
+                               (linum-mode 1)))
 
 ;; Settings
 (setq neo-window-width 32
