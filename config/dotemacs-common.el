@@ -1,3 +1,5 @@
+(require 'dotemacs-customs)
+
 (eval-when-compile (require 'cl))
 
 (let ((base (concat user-emacs-directory "elisp/")))
@@ -25,13 +27,14 @@
                           (format-time-string "%Y-%m-%d %H:%M:%S.%3N" (current-time))
                           elapsed)))))))
 
-(defun require-package (package)
+(defmacro require-package (package)
   "Ensures that PACKAGE is installed."
-  (unless (or (package-installed-p package)
-              (require package nil 'noerror))
-    (unless (assoc package package-archive-contents)
-      (package-refresh-contents))
-    (package-install package)))
+  `(progn (unless (or (package-installed-p ,package)
+                      (require ,package nil 'noerror))
+            (unless (assoc ,package package-archive-contents)
+              (package-refresh-contents))
+            (package-install ,package))
+          (require ,package)))
 
 (unless (fboundp 'with-eval-after-load)
   (defmacro with-eval-after-load (file &rest body)
@@ -61,12 +64,15 @@ FEATURE may be any one of:
    (t
     `(with-eval-after-load ,feature ,@body))))
 
-(defmacro lazy-major-mode (pattern mode)
+(defmacro lazy-major-mode (pattern mode &rest body)
   "Defines a new major-mode matched by PATTERN, installs MODE if necessary, and activates it."
-  `(add-to-list 'auto-mode-alist
-                '(,pattern . (lambda ()
-                               (require-package (quote ,mode))
-                               (,mode)))))
+  (declare (indent 1))
+  `(progn (add-to-list 'auto-mode-alist
+                       '(,pattern . (lambda ()
+                                      (require-package (quote ,mode))
+                                      (,mode))))
+          (after (quote ,mode)
+            ,@body)))
 
 (defmacro delayed-init (&rest body)
   "Runs BODY after idle for a predetermined amount of time."
@@ -77,6 +83,8 @@ FEATURE may be any one of:
 
 (autoload 'evil-evilified-state "evil-evilified-state")
 (autoload 'evilified-state-evilify "evil-evilified-state")
+
+(require 'evil-evilified-state)
 
 (defmacro evilify (mode map &rest body)
   (declare (indent defun))
@@ -89,5 +97,9 @@ FEATURE may be any one of:
   (interactive)
   (byte-recompile-directory "~/.emacs.d/elpa" 0 t))
 
+(defun recompile-config ()
+  "Recompile all config files"
+  (interactive)
+  (byte-recompile-directory dotemacs-config-directory 0 t))
 
-(provide 'init-boot)
+(provide 'dotemacs-common)

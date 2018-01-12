@@ -1,3 +1,7 @@
+(require 'dotemacs-common)
+(require 'def-bindings)
+(require 'def-utils)
+
 (require-package 'key-chord)
 (key-chord-mode 1)
 (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
@@ -6,6 +10,7 @@
 (define-leader
   (dotemacs-bindings/leader-key 'execute-extended-command "M-x")
   ("t"   'my-toggle-hydra/body "toggle")
+  ("T" 'dotemacs/switch-theme "toggle theme")
   ("q"   'my-quit-hydra/body "quit")
   ("j"   'my-jump-hydra/body "jump")
   ("s"   'my-search-hydra/body "search")
@@ -35,6 +40,12 @@
   ("f C" 'my-file-convert-hydra/body "convert")
   ("f s" 'save-buffer "save")
   ("f d" 'dotemacs/show-config-files "config files"))
+
+(dotemacs/describe-leader-key "c" "compilation")
+(define-leader
+  ("c c" 'compile)
+  ("c b" (bind (-some->> (compilation-find-buffer) (switch-to-buffer))) "buffer")
+  ("c k" 'kill-compilation))
 
 (after 'projectile
   (dotemacs/describe-leader-key "p" "project")
@@ -269,4 +280,4 @@
     (message "Thou shall not quit!")))
 
 
-(provide 'init-bindings)
+(provide 'keys)

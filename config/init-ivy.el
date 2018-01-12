@@ -1,3 +1,5 @@
+(require 'dotemacs-common)
+
 (require-package 'ivy)
 (setq ivy-use-virtual-buffers t)
 (setq ivy-virtual-abbreviate 'full)
@@ -20,8 +22,7 @@
 
 
 (after "projectile-autoloads"
-  (require-package 'counsel-projectile)
-  (counsel-projectile-on))
+  (require-package 'counsel-projectile))
 
 
 (defun my-ivy-mini ()

@@ -1,3 +1,5 @@
+(require 'dotemacs-common)
+
 (add-hook 'csharp-mode-hook
           (lambda ()
             (require-package 'omnisharp)
@@ -37,4 +39,4 @@
                        (omnisharp--flycheck-error-parser-raw-json output checker buffer))
       :modes '(csharp-mode omnisharp-mode))))
 
-(provide 'init-csharp)
+(provide 'lang-csharp)

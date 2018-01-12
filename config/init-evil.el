@@ -1,55 +1,13 @@
-(defgroup dotemacs-evil nil
-  "Configuration options for evil-mode."
-  :group 'dotemacs
-  :prefix 'dotemacs-evil)
-
-(defcustom dotemacs-evil/emacs-state-hooks
-  '(org-log-buffer-setup-hook org-capture-mode-hook)
-  "List of hooks to automatically start up in Evil Emacs state."
-  :type '(repeat (symbol))
-  :group 'dotemacs-evil)
-
-(defcustom dotemacs-evil/emacs-state-major-modes
-  '(eshell-mode
-    term-mode
-    calculator-mode
-    xref--xref-buffer-mode
-    makey-key-mode)
-  "List of major modes that should default to Emacs state."
-  :type '(repeat (symbol))
-  :group 'dotemacs-evil)
-
-(defcustom dotemacs-evil/emacs-state-minor-modes
-  '(edebug-mode
-    git-commit-mode
-    magit-blame-mode)
-  "List of minor modes that when active should switch to Emacs state."
-  :type '(repeat (symbol))
-  :group 'dotemacs-evil)
-
-(defcustom dotemacs-evil/emacs-insert-mode
-  nil
-  "If non-nil, insert mode will act as Emacs state."
-  :type 'boolean
-  :group 'dotemacs-evil)
-
-(defcustom dotemacs-evil/evil-want-C-u-scroll
-  t
-  "If non-nil, `C-u' will scroll up"
-  :type 'boolean
-  :group 'dotemacs-evil)
+(require 'dotemacs-common)
 
 
 
-(setq evil-want-C-u-scroll dotemacs-evil/evil-want-C-u-scroll)
+(add-hook 'evil-jumps-post-jump-hook #'recenter)
 
 (setq evil-search-module 'evil-search)
 (setq evil-magic 'very-magic)
 
-(add-hook 'evil-jumps-post-jump-hook #'recenter)
-
 (require-package 'evil)
-(require 'evil)
 
 (evil-mode)
 
@@ -75,6 +33,13 @@
             (evil-put-property 'evil-state-properties 'emacs    :tag " E ")
             (evil-put-property 'evil-state-properties 'replace  :tag " R ")
             (evil-put-property 'evil-state-properties 'operator :tag " O ")))
+
+;; Make evil-mode up/down operate in screen lines instead of logical lines
+(define-key evil-motion-state-map (kbd "j") 'evil-next-visual-line)
+(define-key evil-motion-state-map (kbd "k") 'evil-previous-visual-line)
+;; Also in visual mode
+(define-key evil-visual-state-map (kbd "j") 'evil-next-visual-line)
+(define-key evil-visual-state-map (kbd "k") 'evil-previous-visual-line)
 
 
 

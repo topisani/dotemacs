@@ -1,3 +1,5 @@
+(require 'dotemacs-common)
+
 (setq server-auth-dir (concat dotemacs-cache-directory "server"))
 (require 'server)
 (unless (server-running-p)
@@ -73,13 +75,20 @@
 ;; compile
 (setq compilation-always-kill t)
 (setq compilation-ask-about-save nil)
-(add-hook 'compilation-filter-hook
-          (lambda ()
-            (when (eq major-mode 'compilation-mode)
-              (require 'ansi-color)
-              (let ((inhibit-read-only t))
-                (ansi-color-apply-on-region (point-min) (point-max))))))
+;; (add-hook 'compilation-filter-hook
+;;           (lambda ()
+;;             (when (eq major-mode 'compilation-mode)
+;;               (require 'ansi-color)
+;;               (let ((inhibit-read-only t))
+;;                 (ansi-color-apply-on-region (point-min) (point-max))))))
 
+
+(ignore-errors
+  (require 'ansi-color)
+  (defun my-colorize-compilation-buffer ()
+    (add-to-list 'compilation-environment "TERM=xterm-256color")
+    (ansi-color-apply-on-region compilation-filter-start (point-max)))
+  (add-hook 'compilation-filter-hook 'my-colorize-compilation-buffer))
 
 ;; bookmarks
 (setq bookmark-default-file (concat dotemacs-cache-directory "bookmarks"))

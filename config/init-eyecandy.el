@@ -1,3 +1,5 @@
+(require 'dotemacs-common)
+
 (defgroup dotemacs-eyecandy nil
   "Configuration options for eye candy."
   :group 'dotemacs
@@ -15,22 +17,25 @@
 
 
 (when (eq dotemacs-pair-engine 'emacs)
+  (require 'paren)
   (show-paren-mode)
   (setq show-paren-delay 0))
 
 
-(require-package 'linum-relative)
+;; (require-package 'linum-relative)
+(require-package 'nlinum)
 (column-number-mode t)
-(global-linum-mode t)
-(linum-relative-global-mode)
+(global-nlinum-mode t)
 (display-time-mode t)
 (size-indication-mode t)
+
+(require-package 'hideshow)
 
 (defun my-fold-overlay (ov)
   (when (eq 'code (overlay-get ov 'hs))
     (let ((count (count-lines (overlay-start ov) (overlay-end ov))))
       (overlay-put ov 'after-string
-                   (format "" count)))))
+                   (format "")))))
 
 (setq hs-set-up-overlay 'my-fold-overlay)
 (add-hook 'prog-mode-hook #'hs-minor-mode)
@@ -87,6 +92,7 @@
     ('spaceline (progn
                   (require-package 'spaceline)
                   (require 'spaceline-config)
+                  (require 'def-spaceline)
                   (setq spaceline-highlight-face-func #'spaceline-highlight-face-evil-state)
                   (dotemacs-spaceline/setup)
                   (after "helm-autoloads"
@@ -137,9 +143,16 @@
 (add-hook 'find-file-hook 'hl-line-mode)
 (require-package 'fill-column-indicator)
 
-
 ;; Theme packages
-(require-package 'gruvbox-theme)
-
+(defun dotemacs/switch-theme ()
+  (interactive)
+  (if (custom-theme-enabled-p 'flatblue)
+      (progn
+        (disable-theme 'flatblue)
+        (load-theme 'flatblue-light))
+    (progn
+      (disable-theme 'flatblue-light)
+      (load-theme 'flatblue))
+    ()))
 
 (provide 'init-eyecandy)

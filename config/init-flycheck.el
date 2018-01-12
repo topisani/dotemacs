@@ -1,3 +1,5 @@
+(require 'dotemacs-common)
+
 (require-package 'flycheck)
 
 (setq flycheck-check-syntax-automatically '(save mode-enabled))
@@ -21,5 +23,6 @@
 
 ;; Disable fringe markers
 (setq flycheck-indication-mode nil)
+(setq flycheck-emacs-lisp-load-path 'inherit)
 
 (provide 'init-flycheck)

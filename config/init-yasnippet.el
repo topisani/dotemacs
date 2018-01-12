@@ -1,3 +1,5 @@
+(require 'dotemacs-common)
+
 (delayed-init
  (require-package 'yasnippet)
  (require-package 'yasnippet-snippets)

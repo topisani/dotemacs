@@ -1,3 +1,6 @@
+(require 'dotemacs-common)
+(require 'def-bindings)
+
 (require-package 'elisp-slime-nav)
 (after 'elisp-slime-nav
   (defadvice elisp-slime-nav-find-elisp-thing-at-point (after dotemacs activate)

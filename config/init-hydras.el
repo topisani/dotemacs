@@ -1,3 +1,5 @@
+(require 'dotemacs-common)
+
 (setq lv-use-separator nil)
 
 (defun my-hydra-key-doc-function (key key-width doc doc-width)
@@ -89,7 +91,7 @@
   ("r" read-only-mode)
   ("f" auto-fill-mode)
   ("i" fci-mode)
-  ("n" linum-mode)
+  ("n" nlinum-mode)
   ("p" (cond
         ((eq dotemacs-pair-engine 'emacs)
          (call-interactively #'electric-pair-mode))

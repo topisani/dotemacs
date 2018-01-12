@@ -1,3 +1,5 @@
+(require 'dotemacs-common)
+
 (require-package 'pcache)
 (setq pcache-directory (concat dotemacs-cache-directory "pcache/"))
 
@@ -77,6 +79,7 @@
 
 (require-package 'rainbow-delimiters)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+;; (add-hook 'prog-mode-hook #'linum-relative-mode)
 
 
 (require-package 'framemove)

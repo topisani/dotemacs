@@ -1,3 +1,5 @@
+(require 'dotemacs-common)
+
 (defgroup dotemacs-spelling nil
   "Configuration options for spelling."
   :group 'dotemacs

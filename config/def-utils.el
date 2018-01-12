@@ -1,3 +1,5 @@
+(require 'dotemacs-common)
+
 (defun my-window-killer ()
   "closes the window, and deletes the buffer if it's the last window open."
   (interactive)
@@ -102,14 +104,22 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (let ((func (intern (concat "my-switch-engine-as-" (symbol-name engine)))))
     (apply func '(t)))
   (setq dotemacs-switch-engine engine)
-  (setq projectile-completion-system dotemacs-switch-engine))
+  (if (boundp 'projectile-completion-system)
+      (setq projectile-completion-system dotemacs-switch-engine)))
 
 (defun dotemacs/show-config-files ()
   "Opens a menu with the config file folder"
   (interactive)
-  (pcase dotemacs-switch-engine
-    ('ivy (counsel-find-file "~/.emacs.d/config"))
-    ('helm (helm-find-files-1 "~/.emacs.d/config"))
-    ('ido (ido-find-file "~/.emacs.d/config"))))
+  (counsel-find-file "~/.emacs.d/config"))
+
+(defmacro measure-time (&rest body)
+  "Measure and return the running time of the code block."
+  (declare (indent defun))
+  (let ((start (make-symbol "start"))
+        (result (make-symbol "result")))
+    `(let* ((,start (float-time))
+            (,result ,@body))
+       (message "%s took %s" ',body (- (float-time) ,start))
+       ,result )))
 
 (provide 'def-utils)

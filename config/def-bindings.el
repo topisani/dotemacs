@@ -1,32 +1,4 @@
-(defgroup dotemacs-bindings nil
-  "Configuration options for general key bindings"
-  :group 'dotemacs
-  :prefix 'dotemacs-bindings)
-
-(defcustom dotemacs-bindings/major-key
-  ","
-  "The prefix key for major-mode specific bindings.
-   Remaps to `<leader> m'"
-  :type 'key-sequence
-  :group 'dotemacs-bindings)
-
-(defcustom dotemacs-bindings/leader-key
-  "SPC"
-  "The prefix key for general leader bindings."
-  :type 'key-sequence
-  :group 'dotemacs-bindings)
-
-(defcustom dotemacs-bindings/fallback-major-key
-  "C-,"
-  "fallback `<major-key>'"
-  :type 'key-sequence
-  :group 'dotemacs-bindings)
-
-(defcustom dotemacs-bindings/fallback-leader-key
-  "C-SPC"
-  "Fallback `leader-key'"
-  :type 'key-sequence
-  :group 'dotemacs-bindings)
+(require 'dotemacs-common)
 
 (global-unset-key (kbd "C-SPC"))
 
@@ -39,6 +11,7 @@
      ,@commands))
 
 (require-package 'which-key)
+
 (setq which-key-idle-delay 0.2)
 (setq which-key-min-display-lines 3)
 (which-key-mode)
@@ -69,7 +42,7 @@
                  :keys ,fallback-leaders
                  :major-modes (,mode)))
         (dolist (prefix (append leaders fallback-leaders))
-          (which-key-declare-prefixes-for-mode mode prefix (symbol-name mode)))
+          (which-key-add-major-mode-key-based-replacements mode prefix (symbol-name mode)))
         map))))
 
 (defun dotemacs/describe-function (func desc)

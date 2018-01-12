@@ -1,3 +1,5 @@
+(require 'dotemacs-common)
+
 (defgroup dotemacs-vcs nil
   "Configuration options for version control."
   :group 'dotemacs
@@ -94,6 +96,10 @@ This is non-nil by default on Windows machines, where this is a heavy performanc
 (setq magit-display-buffer-function 'magit-display-buffer-traditional)
 (setq split-height-threshold nil
       split-width-threshold 0)
+
+
+(defun my-magit-hook()
+  )
 
 (after 'magit
   (require-package 'magithub)

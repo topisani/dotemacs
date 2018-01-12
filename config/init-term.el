@@ -1,3 +1,5 @@
+(require 'dotemacs-common)
+
 (require-package 'xterm-color)
 (require 'xterm-color)
 

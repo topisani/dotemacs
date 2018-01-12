@@ -1,3 +1,5 @@
+(require 'dotemacs-common)
+
 (defgroup dotemacs-js nil
   "Configuration options for Javascript."
   :group 'dotemacs
@@ -17,8 +19,6 @@
   "The threshold for when `fundamental-mode' is used instead."
   :type 'integer
   :group 'dotemacs-js)
-
-(setq js-indent-level dotemacs-js/indent-offset)
 
 (defun init-js/auto-mode ()
   (cond ((> (buffer-size) dotemacs-js/maximum-file-size)
@@ -73,4 +73,4 @@
     (add-hook 'js2-minor-mode-hook #'tern-mode)))
 
 
-(provide 'init-js)
+(provide 'lang-js)

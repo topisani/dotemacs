@@ -1,3 +1,5 @@
+(require 'dotemacs-common)
+
 (when (eq dotemacs-pair-engine 'smartparens)
   (require-package 'smartparens)
   (require 'smartparens-config)

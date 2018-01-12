@@ -149,7 +149,7 @@
                  (propertize (format " %s " branch) 'face `(:height 0.9 :inherit) 'display '(raise 0.12)))
                 'help-echo "Git status"
                 'mouse-face '(:box 1)
-                'local-map (make-mode-line-mouse-map 'mouse-1 (lambda () (interactive) (magit-status))))))
+                'local-map (make-mode-line-mouse-map 'mouse-1 (lambda () (interactive) (magit-status-internal (pwd)))))))
 
 (defun spaceline---svn-vc ()
   "Function to return the Spaceline formatted SVN Version Control text."
@@ -354,7 +354,7 @@
          :separator (propertize " | " 'display '(raise 0.1)))
         ((ati-vc-icon ati-flycheck-status ati-package-updates) :separator ""))
 
-      '(((ati-window-purpose) :separator "" :face other-face :tight-right t)))
+      '(((ati-window-purpose) :separator " " :face other-face :tight-right t)))
     (setq-default mode-line-format '("%e" (:eval (spaceline-ml-ati))))))
 
 (provide 'def-spaceline)

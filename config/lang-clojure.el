@@ -1,3 +1,5 @@
+(require 'dotemacs-common)
+
 (add-hook 'clojure-mode-hook
           (lambda ()
             (require-package 'cider)
@@ -48,5 +50,5 @@
     (kbd "r")   #'cider-stacktrace-toggle-repl
     (kbd "T")   #'cider-stacktrace-toggle-tooling))
 
-(provide 'init-clojure)
+(provide 'lang-clojure)
 

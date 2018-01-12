@@ -1,3 +1,5 @@
+(require 'dotemacs-common)
+
 (after 'org
   (defgroup dotemacs-org nil
     "Configuration options for org-mode."
@@ -129,4 +131,3 @@
 ;;             (write-file out-file)))))))
 
 (provide 'init-org)
-

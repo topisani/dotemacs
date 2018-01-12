@@ -1,3 +1,5 @@
+(require 'dotemacs-common)
+
 (when (eq dotemacs-completion-engine 'company)
 
   (defgroup dotemacs-company nil
@@ -7,10 +9,10 @@
 
   (defcustom dotemacs-company/ycmd-server-command nil
     "The path to the ycmd package."
+    :type 'command
     :group 'dotemacs-company)
 
   (require-package 'company)
-  (require 'company)
 
   (setq company-idle-delay 5)
   (setq company-minimum-prefix-length 1)
@@ -51,8 +53,7 @@
           (if (looking-at "->") t nil)))))
 
   (defun do-yas-expand ()
-    (let ((yas/fallback-behavior 'return-nil))
-      (yas/expand)))
+    (yas-expand))
 
   (defun tab-indent-or-complete ()
     (interactive)
@@ -61,7 +62,7 @@
       (minibuffer-complete))
      (t
       (indent-for-tab-command)
-      (if (or (not yas/minor-mode)
+      (if (or (not yas-minor-mode)
               (null (do-yas-expand)))
           (if (check-expansion)
               (progn
@@ -73,7 +74,7 @@
 
   (defun tab-complete-or-next-field ()
     (interactive)
-    (if (or (not yas/minor-mode)
+    (if (or (not yas-minor-mode)
             (null (do-yas-expand)))
         (if company-candidates
             (company-complete-selection)
@@ -88,7 +89,7 @@
 
   (defun expand-snippet-or-complete-selection ()
     (interactive)
-    (if (or (not yas/minor-mode)
+    (if (or (not yas-minor-mode)
             (null (do-yas-expand))
             (company-abort))
         (company-complete-selection)))

@@ -1,5 +1,7 @@
+(require 'dotemacs-common)
+(require 'def-bindings)
+
 (require-package 'neotree)
-(require 'neotree)
 
 (defun dotemacs/neotree-expand-or-open ()
   "Expand or open a neotree node."
@@ -73,6 +75,11 @@
 (defun dotemacs//neotree-startup ()
   (interactive)
   (neotree-show)
+  (setq cursor-in-non-selected-windows nil)
+  (buffer-face-set 'cursor '(:inherit 'hl-line-face))
+  (hl-line-mode t)
+  (internal-show-cursor nil nil)
+  (nlinum-mode -1)
   (call-interactively 'other-window))
 
 (if dotemacs/neotree-on-startup
@@ -203,13 +210,6 @@ Optional NODE-NAME is used for the `icons' theme"
 (advice-add #'neo-buffer--insert-file-entry :override #'dotemacs//neo-buffer--insert-file-entry)
 
 
-;; hook
-(add-hook 'neotree-mode-hook (lambda ()
-                               (setq cursor-in-non-selected-windows nil)
-                               (buffer-face-set 'cursor '(:inherit 'hl-line-face))
-                               (hl-line-mode t)
-                               (linum-mode 1)))
-
 ;; Settings
 (setq neo-window-width 32
       neo-create-file-auto-open t
@@ -237,6 +237,7 @@ Optional NODE-NAME is used for the `icons' theme"
 
 
 
+(require 'def-bindings)
 ;; Bindings
 
 (evilified-state--evilified-state-on-entry)
@@ -263,3 +264,5 @@ Optional NODE-NAME is used for the `icons' theme"
   ("q" 'neotree-hide "close")
   ("s" 'neotree-hidden-file-toggle
    '(if neo-buffer--show-hidden-file-p "[x] hidden files" "[ ] hidden files")))
+
+(provide 'init-neotree)

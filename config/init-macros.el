@@ -1,3 +1,5 @@
+(require 'init-evil)
+
 ;; note that all of these macros assume that you're in evil-mode, and a host of other
 ;; packages such as smartparens.
 

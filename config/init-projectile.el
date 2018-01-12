@@ -1,3 +1,5 @@
+(require 'dotemacs-common)
+
 (require-package 'projectile)
 
 (after 'helm-projectile

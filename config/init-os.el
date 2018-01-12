@@ -1,3 +1,5 @@
+(require 'dotemacs-common)
+
 (defcustom dotemacs-os/additional-exec-paths
   nil
   "Additional paths to be added to `exec-path'."

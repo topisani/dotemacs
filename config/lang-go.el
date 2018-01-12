@@ -1,3 +1,5 @@
+(require 'dotemacs-common)
+
 (lazy-major-mode "\\.go$" go-mode)
 
 (after 'go-mode
