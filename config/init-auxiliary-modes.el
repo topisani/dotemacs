@@ -1,6 +1,5 @@
 (require 'dotemacs-common)
 
-(lazy-major-mode "\\.\\(md\\|markdown\\)$" markdown-mode)
 (lazy-major-mode "\\.toml$" toml-mode)
 (lazy-major-mode "\\.yaml$" yaml-mode)
 (lazy-major-mode "\\.json$" json-mode)

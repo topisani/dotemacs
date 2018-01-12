@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (require 'dotemacs-customs)
 
 (eval-when-compile (require 'cl))
@@ -66,7 +67,7 @@ FEATURE may be any one of:
 
 (defmacro lazy-major-mode (pattern mode &rest body)
   "Defines a new major-mode matched by PATTERN, installs MODE if necessary, and activates it."
-  (declare (indent 1))
+  (declare (indent defun))
   `(progn (add-to-list 'auto-mode-alist
                        '(,pattern . (lambda ()
                                       (require-package (quote ,mode))
@@ -101,5 +102,16 @@ FEATURE may be any one of:
   "Recompile all config files"
   (interactive)
   (byte-recompile-directory dotemacs-config-directory 0 t))
+
+(defmacro add-named-hook (hook &rest body)
+  "Easilly define a named hook for HOOK, so it is not added multiple times on reloading
+
+Be aware that this only works once per hook"
+  (declare (indent defun))
+  (let ((func (intern (concat "dotemacs//main-named-hook--" (symbol-name (eval hook))))))
+    `(progn
+       (defun ,func ()
+         ,@body)
+       (add-hook ,hook (quote ,func)))))
 
 (provide 'dotemacs-common)

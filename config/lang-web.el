@@ -65,38 +65,38 @@
 
 
 (lazy-major-mode "\\.html?$" web-mode
-                 (defun init-web/web-mode-hook ()
-                   (electric-pair-mode -1)
-                   (when (fboundp 'smartparens-mode)
-                     (smartparens-mode -1))
+  (defun init-web/web-mode-hook ()
+    (electric-pair-mode -1)
+    (when (fboundp 'smartparens-mode)
+      (smartparens-mode -1))
 
-                   (when (and dotemacs-web/treat-js-as-jsx
-                              (string-match-p "\\.js$" (buffer-file-name)))
-                     (web-mode-set-content-type "jsx"))
+    (when (and dotemacs-web/treat-js-as-jsx
+               (string-match-p "\\.js$" (buffer-file-name)))
+      (web-mode-set-content-type "jsx"))
 
-                   (when (and dotemacs-web/js2-integration
-                              (or (equal web-mode-content-type "javascript")
-                                  (equal web-mode-content-type "jsx")))
-                     (require-package 'js2-mode)
-                     (js2-minor-mode)))
-                 (add-hook 'web-mode-hook #'init-web/web-mode-hook)
+    (when (and dotemacs-web/js2-integration
+               (or (equal web-mode-content-type "javascript")
+                   (equal web-mode-content-type "jsx")))
+      (require-package 'js2-mode)
+      (js2-minor-mode)))
+  (add-hook 'web-mode-hook #'init-web/web-mode-hook)
 
-                 (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil))
+  (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil))
 
-                 (setq web-mode-code-indent-offset dotemacs-web/indent-offset)
-                 (setq web-mode-markup-indent-offset dotemacs-web/indent-offset)
-                 (setq web-mode-css-indent-offset dotemacs-web/indent-offset)
-                 (setq web-mode-sql-indent-offset dotemacs-web/indent-offset)
+  (setq web-mode-code-indent-offset dotemacs-web/indent-offset)
+  (setq web-mode-markup-indent-offset dotemacs-web/indent-offset)
+  (setq web-mode-css-indent-offset dotemacs-web/indent-offset)
+  (setq web-mode-sql-indent-offset dotemacs-web/indent-offset)
 
-                 (setq web-mode-enable-current-column-highlight t)
-                 (setq web-mode-enable-current-element-highlight t)
-                 (setq web-mode-enable-element-content-fontification t)
-                 (setq web-mode-enable-element-tag-fontification t)
-                 (setq web-mode-enable-html-entities-fontification t)
-                 (setq web-mode-enable-inlays t)
-                 (setq web-mode-enable-sql-detection t)
-                 (setq web-mode-enable-block-face t)
-                 (setq web-mode-enable-part-face t))
+  (setq web-mode-enable-current-column-highlight t)
+  (setq web-mode-enable-current-element-highlight t)
+  (setq web-mode-enable-element-content-fontification t)
+  (setq web-mode-enable-element-tag-fontification t)
+  (setq web-mode-enable-html-entities-fontification t)
+  (setq web-mode-enable-inlays t)
+  (setq web-mode-enable-sql-detection t)
+  (setq web-mode-enable-block-face t)
+  (setq web-mode-enable-part-face t))
 
 
 ;; indent after deleting a tag
